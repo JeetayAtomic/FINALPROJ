@@ -47,6 +47,10 @@ public class Tenant
     [MaxLength(500)]
     public string? JsonFolderPath { get; set; }
 
+    /// <summary>Public URL of the tenant's logo, shown in header/dashboard/tenant-select.</summary>
+    [MaxLength(1000)]
+    public string? LogoUrl { get; set; }
+
     // ---------- State + audit ----------
     public bool IsActive { get; set; } = true;
 

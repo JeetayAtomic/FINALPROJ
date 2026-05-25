@@ -1,7 +1,16 @@
 <header class="top-header">
   <div class="header-left">
-    <span class="material-icons header-logo">dashboard</span>
-    <h1 class="header-title">CoreApp with SSO</h1>
+    @if (tenantLogoUrl()) {
+      <img class="tenant-logo-img" [src]="tenantLogoUrl()" [alt]="(auth.currentUser()?.tenantName || 'Tenant') + ' logo'" />
+    } @else {
+      <span class="material-icons header-logo">dashboard</span>
+    }
+    <div class="header-title-block">
+      <h1 class="header-title">CoreApp with SSO</h1>
+      @if (auth.currentUser()?.tenantName) {
+        <span class="header-tenant">{{ auth.currentUser()?.tenantName }}</span>
+      }
+    </div>
   </div>
 
   <div class="header-right">

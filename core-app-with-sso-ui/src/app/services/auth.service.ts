@@ -18,6 +18,7 @@ interface StoredSession {
   email: string;
   tenantId?: number;
   tenantName?: string;
+  tenantLogoUrl?: string | null;
   role: string;
   isSuperAdmin: boolean;
   sessionId?: number;
@@ -129,6 +130,7 @@ export class AuthService {
       email: res.email,
       tenantId: res.tenantId,
       tenantName: res.tenantName,
+      tenantLogoUrl: res.tenantLogoUrl,
       role: res.role,
       isSuperAdmin: false,
       sessionId: res.sessionId

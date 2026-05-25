@@ -19,6 +19,7 @@ export class HeaderComponent implements OnInit {
   loading = signal(true);
 
   isTenantAdmin = computed(() => this.auth.currentUser()?.role === 'Admin');
+  tenantLogoUrl = computed(() => this.auth.currentUser()?.tenantLogoUrl || null);
 
   constructor(public auth: AuthService, private router: Router, private appService: ApplicationService) {}
 

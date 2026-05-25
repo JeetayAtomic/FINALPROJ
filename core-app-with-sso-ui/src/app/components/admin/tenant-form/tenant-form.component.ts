@@ -38,6 +38,7 @@ export class TenantFormComponent implements OnInit {
     errorFolderPath: '',
     publishFolderPath: '',
     jsonFolderPath: '',
+    logoUrl: '',
     isActive: true,
     initialAdminFullName: '',
     initialAdminEmail: '',
@@ -76,6 +77,7 @@ export class TenantFormComponent implements OnInit {
           errorFolderPath: t.errorFolderPath ?? '',
           publishFolderPath: t.publishFolderPath ?? '',
           jsonFolderPath: t.jsonFolderPath ?? '',
+          logoUrl: t.logoUrl ?? '',
           isActive: t.isActive
         };
         this.loading.set(false);
@@ -111,6 +113,7 @@ export class TenantFormComponent implements OnInit {
         errorFolderPath: this.model.errorFolderPath,
         publishFolderPath: this.model.publishFolderPath,
         jsonFolderPath: this.model.jsonFolderPath,
+        logoUrl: this.model.logoUrl,
         isActive: this.model.isActive
       };
       this.tenantAdmin.update(id, update).subscribe({ next: done, error: fail });
@@ -127,6 +130,7 @@ export class TenantFormComponent implements OnInit {
         errorFolderPath: this.model.errorFolderPath,
         publishFolderPath: this.model.publishFolderPath,
         jsonFolderPath: this.model.jsonFolderPath,
+        logoUrl: this.model.logoUrl,
         initialAdminFullName: this.model.initialAdminFullName ?? '',
         initialAdminEmail: this.model.initialAdminEmail ?? '',
         initialAdminPassword: this.model.initialAdminPassword ?? ''

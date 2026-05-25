@@ -16,6 +16,11 @@
     <ul class="tenant-list">
       @for (t of tenants; track t.tenantId) {
         <li class="tenant-item" (click)="pick(t.tenantId)" [class.disabled]="loading()">
+          @if (t.logoUrl) {
+            <img class="tenant-thumb" [src]="t.logoUrl" [alt]="t.name + ' logo'" />
+          } @else {
+            <span class="tenant-thumb placeholder">{{ initials(t.name) }}</span>
+          }
           <div class="tenant-meta">
             <div class="tenant-name">{{ t.name }}</div>
             <div class="tenant-sub">{{ t.slug }} &middot; {{ t.role }}</div>

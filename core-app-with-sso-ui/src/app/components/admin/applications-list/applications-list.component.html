@@ -1,0 +1,83 @@
+<div class="admin-shell">
+  <header class="admin-topbar">
+    <div class="title">
+      <span class="material-icons">apps</span>
+      <h1>Super admin</h1>
+      <nav class="tabs" style="margin-left:24px;display:flex;gap:8px;">
+        <a routerLink="/admin/tenants"      routerLinkActive="active" style="padding:6px 14px;border-radius:6px;font-size:13px;color:#5f6368;text-decoration:none;">Tenants</a>
+        <a routerLink="/admin/applications" routerLinkActive="active" style="padding:6px 14px;border-radius:6px;font-size:13px;color:#5f6368;text-decoration:none;">Applications</a>
+        <a routerLink="/admin/templates"    routerLinkActive="active" style="padding:6px 14px;border-radius:6px;font-size:13px;color:#5f6368;text-decoration:none;">Templates</a>
+        <a routerLink="/admin/lookup"       routerLinkActive="active" style="padding:6px 14px;border-radius:6px;font-size:13px;color:#5f6368;text-decoration:none;">Tenant's Templates</a>
+      </nav>
+    </div>
+    <div class="actions">
+      <span class="user-email">{{ auth.currentUser()?.email }}</span>
+      <button class="btn-ghost" (click)="logout()">Sign out</button>
+    </div>
+  </header>
+
+  <div class="admin-content">
+    <div class="toolbar">
+      <button class="btn-primary" (click)="create()">
+        <span class="material-icons">add</span>
+        New application
+      </button>
+    </div>
+
+    @if (error()) {
+      <div class="error-message">
+        <span class="material-icons">error_outline</span>
+        {{ error() }}
+      </div>
+    }
+
+    @if (loading()) {
+      <div class="empty">Loading…</div>
+    } @else if (apps().length === 0) {
+      <div class="empty">No applications in the catalog yet. Click "New application" to add one.</div>
+    } @else {
+      <table class="tenant-table">
+        <thead>
+          <tr>
+            <th class="col-logo">Icon</th>
+            <th>Name</th>
+            <th>Base URL</th>
+            <th>Order</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th class="col-actions"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (a of apps(); track a.id) {
+            <tr [class.inactive]="!a.isActive">
+              <td class="col-logo">
+                <span class="app-icon-pill" [style.background-color]="a.iconColor">
+                  <span class="material-icons">{{ a.iconName }}</span>
+                </span>
+              </td>
+              <td>
+                <div class="tenant-name">{{ a.name }}</div>
+                <div class="tenant-sub">{{ a.description || '—' }}</div>
+              </td>
+              <td class="mono">{{ a.baseUrl }}</td>
+              <td>{{ a.displayOrder }}</td>
+              <td>
+                <span class="status" [class.active]="a.isActive">
+                  {{ a.isActive ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td>{{ a.createdAt | date:'yyyy-MM-dd' }}</td>
+              <td class="col-actions">
+                <button class="btn-link" (click)="edit(a)">Edit</button>
+                @if (a.isActive) {
+                  <button class="btn-link danger" (click)="deactivate(a)">Deactivate</button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+</div>

@@ -85,6 +85,7 @@ public class TenantsController : ControllerBase
             ErrorFolderPath = dto.ErrorFolderPath,
             PublishFolderPath = dto.PublishFolderPath,
             JsonFolderPath = dto.JsonFolderPath,
+            LogoUrl = dto.LogoUrl,
             IsActive = true,
             CreatedBy = actor
         };
@@ -164,6 +165,7 @@ public class TenantsController : ControllerBase
         tenant.ErrorFolderPath = dto.ErrorFolderPath;
         tenant.PublishFolderPath = dto.PublishFolderPath;
         tenant.JsonFolderPath = dto.JsonFolderPath;
+        tenant.LogoUrl = dto.LogoUrl;
         tenant.IsActive = dto.IsActive;
 
         tenant.LastUpdatedDate = DateTime.UtcNow;
@@ -268,6 +270,7 @@ public class TenantsController : ControllerBase
         ErrorFolderPath = t.ErrorFolderPath,
         PublishFolderPath = t.PublishFolderPath,
         JsonFolderPath = t.JsonFolderPath,
+        LogoUrl = t.LogoUrl,
         IsActive = t.IsActive,
         CreatedDate = t.CreatedDate,
         CreatedBy = t.CreatedBy,

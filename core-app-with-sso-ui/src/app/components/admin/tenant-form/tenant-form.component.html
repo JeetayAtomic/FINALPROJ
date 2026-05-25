@@ -68,6 +68,29 @@
       </section>
 
       <section class="card">
+        <h2>Branding</h2>
+        <div class="grid two-col">
+          <label>
+            <span>Logo URL</span>
+            <input
+              name="logoUrl"
+              type="url"
+              [(ngModel)]="model.logoUrl"
+              maxlength="1000"
+              placeholder="https://cdn.example.com/acme-logo.png"
+            />
+            <small>Shown in the app header, dashboard, and tenant picker. Leave empty to show the tenant name instead.</small>
+          </label>
+          @if (model.logoUrl) {
+            <div class="logo-preview">
+              <span class="logo-preview-label">Preview</span>
+              <img [src]="model.logoUrl" alt="Logo preview" />
+            </div>
+          }
+        </div>
+      </section>
+
+      <section class="card">
         <h2>Folder paths</h2>
         <div class="grid two-col">
           <label>

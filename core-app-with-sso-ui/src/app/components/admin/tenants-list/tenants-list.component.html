@@ -4,9 +4,10 @@
       <span class="material-icons">apartment</span>
       <h1>Super admin</h1>
       <nav class="tabs" style="margin-left:24px;display:flex;gap:8px;">
-        <a routerLink="/admin/tenants"   routerLinkActive="active" style="padding:6px 14px;border-radius:6px;font-size:13px;color:#5f6368;text-decoration:none;">Tenants</a>
-        <a routerLink="/admin/templates" routerLinkActive="active" style="padding:6px 14px;border-radius:6px;font-size:13px;color:#5f6368;text-decoration:none;">Templates</a>
-        <a routerLink="/admin/lookup"    routerLinkActive="active" style="padding:6px 14px;border-radius:6px;font-size:13px;color:#5f6368;text-decoration:none;">Tenant's Templates</a>
+        <a routerLink="/admin/tenants"      routerLinkActive="active" style="padding:6px 14px;border-radius:6px;font-size:13px;color:#5f6368;text-decoration:none;">Tenants</a>
+        <a routerLink="/admin/applications" routerLinkActive="active" style="padding:6px 14px;border-radius:6px;font-size:13px;color:#5f6368;text-decoration:none;">Applications</a>
+        <a routerLink="/admin/templates"    routerLinkActive="active" style="padding:6px 14px;border-radius:6px;font-size:13px;color:#5f6368;text-decoration:none;">Templates</a>
+        <a routerLink="/admin/lookup"       routerLinkActive="active" style="padding:6px 14px;border-radius:6px;font-size:13px;color:#5f6368;text-decoration:none;">Tenant's Templates</a>
       </nav>
     </div>
     <div class="actions">
@@ -38,6 +39,7 @@
       <table class="tenant-table">
         <thead>
           <tr>
+            <th class="col-logo">Logo</th>
             <th>Name</th>
             <th>Client code</th>
             <th>DB name</th>
@@ -50,6 +52,13 @@
         <tbody>
           @for (t of tenants(); track t.id) {
             <tr [class.inactive]="!t.isActive">
+              <td class="col-logo">
+                @if (t.logoUrl) {
+                  <img class="tenant-logo" [src]="t.logoUrl" [alt]="t.name + ' logo'" />
+                } @else {
+                  <span class="tenant-logo placeholder">{{ initials(t.name) }}</span>
+                }
+              </td>
               <td>
                 <div class="tenant-name">{{ t.name }}</div>
                 <div class="tenant-sub">{{ t.slug }}</div>
@@ -65,6 +74,7 @@
               <td>{{ t.createdDate | date:'yyyy-MM-dd' }}</td>
               <td class="col-actions">
                 <button class="btn-link" (click)="edit(t)">Edit</button>
+                <a class="btn-link" [routerLink]="['/admin/tenants', t.id, 'applications']">Apps</a>
                 @if (t.isActive) {
                   <button class="btn-link" (click)="openSeed(t)">Seed admin</button>
                   <button class="btn-link danger" (click)="deactivate(t)">Deactivate</button>

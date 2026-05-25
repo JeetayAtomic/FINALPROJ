@@ -22,11 +22,30 @@
   color: #4285F4;
 }
 
+.tenant-logo-img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border-radius: 6px;
+  background: white;
+}
+
+.header-title-block {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
 .header-title {
   font-size: 20px;
   font-weight: 500;
   color: #202124;
   margin: 0;
+}
+
+.header-tenant {
+  font-size: 12px;
+  color: #5f6368;
 }
 
 .header-right {

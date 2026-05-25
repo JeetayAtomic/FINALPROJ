@@ -57,7 +57,8 @@ public class AuthController : ControllerBase
                 TenantId = ut.TenantId,
                 Slug = ut.Tenant.Slug,
                 Name = ut.Tenant.Name,
-                Role = ut.Role
+                Role = ut.Role,
+                LogoUrl = ut.Tenant.LogoUrl
             })
             .ToListAsync();
 
@@ -112,6 +113,7 @@ public class AuthController : ControllerBase
             TenantId = membership.TenantId,
             TenantName = membership.Tenant.Name,
             Role = membership.Role,
+            TenantLogoUrl = membership.Tenant.LogoUrl,
             SessionId = session.Id
         });
     }

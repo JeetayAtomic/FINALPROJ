@@ -19,6 +19,7 @@ public class TenantDto
     public string? ErrorFolderPath { get; set; }
     public string? PublishFolderPath { get; set; }
     public string? JsonFolderPath { get; set; }
+    public string? LogoUrl { get; set; }
 
     public bool IsActive { get; set; }
     public DateTime CreatedDate { get; set; }
@@ -50,6 +51,8 @@ public abstract class TenantWriteDto
     [MaxLength(500)] public string? ErrorFolderPath { get; set; }
     [MaxLength(500)] public string? PublishFolderPath { get; set; }
     [MaxLength(500)] public string? JsonFolderPath { get; set; }
+
+    [MaxLength(1000), Url] public string? LogoUrl { get; set; }
 }
 
 /// <summary>

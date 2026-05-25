@@ -1,0 +1,85 @@
+<div class="admin-shell">
+  <header class="admin-topbar">
+    <div class="title">
+      <button class="btn-back" (click)="back()">
+        <span class="material-icons">arrow_back</span>
+      </button>
+      <span class="material-icons">apps</span>
+      <h1>
+        Applications
+        @if (tenant()) {
+          <span style="color:#5f6368;font-weight:400;font-size:14px;"> &middot; {{ tenant()!.name }}</span>
+        }
+      </h1>
+    </div>
+  </header>
+
+  <div class="admin-content">
+    @if (error()) {
+      <div class="error-message">
+        <span class="material-icons">error_outline</span>
+        {{ error() }}
+      </div>
+    }
+
+    @if (loading()) {
+      <div class="empty">Loading…</div>
+    } @else if (rows().length === 0) {
+      <div class="empty">No applications in the catalog. Create one under Applications first.</div>
+    } @else {
+      <table class="tenant-table">
+        <thead>
+          <tr>
+            <th class="col-logo">Icon</th>
+            <th>Application</th>
+            <th>Subscribed</th>
+            <th>Active for tenant</th>
+            <th>Assigned</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of rows(); track r.applicationId) {
+            <tr [class.inactive]="!r.applicationActive">
+              <td class="col-logo">
+                <span class="app-icon-pill" [style.background-color]="r.iconColor">
+                  <span class="material-icons">{{ r.iconName }}</span>
+                </span>
+              </td>
+              <td>
+                <div class="tenant-name">{{ r.name }}</div>
+                <div class="tenant-sub">{{ r.description || '—' }}</div>
+              </td>
+              <td>
+                <label class="checkbox">
+                  <input
+                    type="checkbox"
+                    [checked]="r.isSubscribed"
+                    [disabled]="savingId() === r.applicationId || !r.applicationActive"
+                    (change)="toggleSubscribed(r, $any($event.target).checked)"
+                  />
+                </label>
+              </td>
+              <td>
+                <label class="checkbox">
+                  <input
+                    type="checkbox"
+                    [checked]="r.subscriptionActive"
+                    [disabled]="!r.isSubscribed || savingId() === r.applicationId"
+                    (change)="toggleActive(r, $any($event.target).checked)"
+                  />
+                </label>
+              </td>
+              <td>
+                @if (r.assignedAt) {
+                  {{ r.assignedAt | date:'yyyy-MM-dd' }}
+                } @else {
+                  —
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+</div>

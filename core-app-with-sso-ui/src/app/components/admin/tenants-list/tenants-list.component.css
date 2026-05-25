@@ -255,3 +255,43 @@
   gap: 10px;
   margin-top: 4px;
 }
+
+.col-logo {
+  width: 56px;
+  padding-right: 4px !important;
+}
+
+.tenant-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  object-fit: contain;
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 600;
+  color: #5f6368;
+}
+
+.tenant-logo.placeholder {
+  background: #f1f3f4;
+}
+
+.app-icon-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  color: white;
+}
+
+.app-icon-pill .material-icons {
+  font-size: 22px;
+}
+

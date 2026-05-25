@@ -1,0 +1,75 @@
+<div class="form-shell">
+  <header class="form-topbar">
+    <button class="btn-back" (click)="cancel()">
+      <span class="material-icons">arrow_back</span>
+    </button>
+    <h1>{{ isEdit() ? 'Edit application' : 'New application' }}</h1>
+  </header>
+
+  @if (loading()) {
+    <div class="card empty">Loading…</div>
+  } @else {
+    <form (ngSubmit)="submit()" class="form-content" #f="ngForm">
+      @if (error()) {
+        <div class="error-message">
+          <span class="material-icons">error_outline</span>
+          {{ error() }}
+        </div>
+      }
+
+      <section class="card">
+        <h2>Application</h2>
+        <div class="grid two-col">
+          <label>
+            <span>Name *</span>
+            <input name="name" [(ngModel)]="model.name" required maxlength="100" />
+          </label>
+          <label>
+            <span>Base URL *</span>
+            <input name="baseUrl" type="url" [(ngModel)]="model.baseUrl" required maxlength="500"
+                   placeholder="https://app.example.com" />
+          </label>
+          <label class="full">
+            <span>Description</span>
+            <input name="description" [(ngModel)]="model.description" maxlength="500" />
+          </label>
+          <label>
+            <span>Icon name</span>
+            <input name="iconName" [(ngModel)]="model.iconName" maxlength="100"
+                   placeholder="e.g. people, account_balance, inventory_2" />
+            <small>Use a <a href="https://fonts.google.com/icons" target="_blank" rel="noopener">Material Symbols</a> name.</small>
+          </label>
+          <label>
+            <span>Icon color</span>
+            <input name="iconColor" type="color" [(ngModel)]="model.iconColor" />
+          </label>
+          <label>
+            <span>Display order</span>
+            <input name="displayOrder" type="number" [(ngModel)]="model.displayOrder" />
+          </label>
+          @if (isEdit()) {
+            <label class="checkbox">
+              <input type="checkbox" name="isActive" [(ngModel)]="model.isActive" />
+              <span>Active</span>
+            </label>
+          }
+        </div>
+
+        <div class="logo-preview" style="margin-top:16px;">
+          <span class="logo-preview-label">Preview</span>
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:10px;color:white;"
+                [style.background-color]="model.iconColor">
+            <span class="material-icons">{{ model.iconName || 'apps' }}</span>
+          </span>
+        </div>
+      </section>
+
+      <div class="actions">
+        <button type="button" class="btn-ghost" (click)="cancel()">Cancel</button>
+        <button type="submit" class="btn-primary" [disabled]="submitting() || !f.valid">
+          {{ submitting() ? 'Saving…' : (isEdit() ? 'Save changes' : 'Create application') }}
+        </button>
+      </div>
+    </form>
+  }
+</div>

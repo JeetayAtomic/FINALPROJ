@@ -18,6 +18,7 @@ export interface TenantSummary {
   slug: string;
   name: string;
   role: string;
+  logoUrl?: string | null;
 }
 
 /** Response from POST /auth/login. */
@@ -44,6 +45,7 @@ export interface AuthResponse {
   tenantId: number;
   tenantName: string;
   role: string;
+  tenantLogoUrl?: string | null;
   /** Server-side session id for cross-app logout sync. */
   sessionId: number;
 }
@@ -75,6 +77,7 @@ export interface TenantDto {
   errorFolderPath?: string | null;
   publishFolderPath?: string | null;
   jsonFolderPath?: string | null;
+  logoUrl?: string | null;
 
   isActive: boolean;
   createdDate: string;
@@ -95,6 +98,7 @@ export interface TenantWriteBase {
   errorFolderPath?: string | null;
   publishFolderPath?: string | null;
   jsonFolderPath?: string | null;
+  logoUrl?: string | null;
 }
 
 export interface CreateTenantDto extends TenantWriteBase {
@@ -236,4 +240,52 @@ export interface AdminTemplateRow {
 export interface AdminLookupResponse {
   tenant: TenantDto;
   template: JsonTemplateDto;
+}
+
+// ---------- Super-admin: application catalog ----------
+
+export interface ApplicationAdminDto {
+  id: number;
+  name: string;
+  description: string;
+  baseUrl: string;
+  iconName: string;
+  iconColor: string;
+  displayOrder: number;
+  isActive: boolean;
+  createdAt: string;
+}
+
+export interface ApplicationWriteBase {
+  name: string;
+  description: string;
+  baseUrl: string;
+  iconName: string;
+  iconColor: string;
+  displayOrder: number;
+}
+
+export interface CreateApplicationDto extends ApplicationWriteBase {}
+
+export interface UpdateApplicationDto extends ApplicationWriteBase {
+  isActive: boolean;
+}
+
+// ---------- Tenant subscriptions (super-admin + tenant-admin) ----------
+
+export interface TenantApplicationDto {
+  applicationId: number;
+  name: string;
+  description: string;
+  iconName: string;
+  iconColor: string;
+  displayOrder: number;
+  applicationActive: boolean;
+  isSubscribed: boolean;
+  subscriptionActive: boolean;
+  assignedAt?: string | null;
+}
+
+export interface TenantApplicationWriteDto {
+  isActive: boolean;
 }

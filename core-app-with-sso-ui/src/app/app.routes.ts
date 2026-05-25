@@ -6,6 +6,10 @@ import { TenantsListComponent } from './components/admin/tenants-list/tenants-li
 import { TenantFormComponent } from './components/admin/tenant-form/tenant-form.component';
 import { AdminTemplatesComponent } from './components/admin/admin-templates/admin-templates.component';
 import { AdminLookupComponent } from './components/admin/admin-lookup/admin-lookup.component';
+import { ApplicationsListComponent } from './components/admin/applications-list/applications-list.component';
+import { ApplicationFormComponent } from './components/admin/application-form/application-form.component';
+import { TenantApplicationsComponent } from './components/admin/tenant-applications/tenant-applications.component';
+import { TenantAdminApplicationsListComponent } from './components/tenant-admin/applications-list/applications-list.component';
 import { UsersListComponent } from './components/tenant-admin/users-list/users-list.component';
 import { UserFormComponent } from './components/tenant-admin/user-form/user-form.component';
 import { RolesListComponent } from './components/tenant-admin/roles-list/roles-list.component';
@@ -28,6 +32,10 @@ export const routes: Routes = [
   { path: 'admin/tenants', component: TenantsListComponent, canActivate: [superAdminGuard] },
   { path: 'admin/tenants/new', component: TenantFormComponent, canActivate: [superAdminGuard] },
   { path: 'admin/tenants/:id/edit', component: TenantFormComponent, canActivate: [superAdminGuard] },
+  { path: 'admin/tenants/:id/applications', component: TenantApplicationsComponent, canActivate: [superAdminGuard] },
+  { path: 'admin/applications', component: ApplicationsListComponent, canActivate: [superAdminGuard] },
+  { path: 'admin/applications/new', component: ApplicationFormComponent, canActivate: [superAdminGuard] },
+  { path: 'admin/applications/:id/edit', component: ApplicationFormComponent, canActivate: [superAdminGuard] },
   { path: 'admin/templates', component: AdminTemplatesComponent, canActivate: [superAdminGuard] },
   { path: 'admin/lookup', component: AdminLookupComponent, canActivate: [superAdminGuard] },
 
@@ -39,6 +47,7 @@ export const routes: Routes = [
   { path: 'tenant-admin/roles', component: RolesListComponent, canActivate: [tenantAdminGuard] },
   { path: 'tenant-admin/roles/new', component: RoleFormComponent, canActivate: [tenantAdminGuard] },
   { path: 'tenant-admin/roles/:id/edit', component: RoleFormComponent, canActivate: [tenantAdminGuard] },
+  { path: 'tenant-admin/applications', component: TenantAdminApplicationsListComponent, canActivate: [tenantAdminGuard] },
   { path: 'tenant-admin/templates', component: TemplatesListComponent, canActivate: [tenantAdminGuard] },
   { path: 'tenant-admin/templates/new', component: TemplateEditorComponent, canActivate: [tenantAdminGuard] },
   { path: 'tenant-admin/templates/:id/edit', component: TemplateEditorComponent, canActivate: [tenantAdminGuard] },

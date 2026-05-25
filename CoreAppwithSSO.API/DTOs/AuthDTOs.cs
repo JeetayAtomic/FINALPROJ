@@ -17,6 +17,7 @@ public class TenantSummaryDto
     public string Slug { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public string Role { get; set; } = string.Empty;
+    public string? LogoUrl { get; set; }
 }
 
 /// <summary>
@@ -53,6 +54,7 @@ public class AuthResponseDto
     public int TenantId { get; set; }
     public string TenantName { get; set; } = string.Empty;
     public string Role { get; set; } = string.Empty;
+    public string? TenantLogoUrl { get; set; }
 
     /// <summary>
     /// Server-side session id. The dashboard polls /api/sso/sessions/{id} for
