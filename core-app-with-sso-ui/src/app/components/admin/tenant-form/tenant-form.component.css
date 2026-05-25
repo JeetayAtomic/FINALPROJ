@@ -1,0 +1,171 @@
+.form-shell {
+  min-height: 100vh;
+  background: #f5f6fa;
+  padding-bottom: 40px;
+}
+
+.form-topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: white;
+  padding: 12px 24px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.form-topbar h1 {
+  margin: 0;
+  font-size: 20px;
+  color: #202124;
+}
+
+.btn-back {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: #5f6368;
+  border-radius: 50%;
+}
+
+.btn-back:hover {
+  background: #f0f0f0;
+}
+
+.form-content {
+  max-width: 960px;
+  margin: 24px auto 0;
+  padding: 0 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.card {
+  background: white;
+  border-radius: 8px;
+  padding: 20px 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.card h2 {
+  margin: 0 0 16px;
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: #5f6368;
+}
+
+.grid {
+  display: grid;
+  gap: 16px;
+}
+
+.grid.two-col {
+  grid-template-columns: 1fr 1fr;
+}
+
+@media (max-width: 720px) {
+  .grid.two-col { grid-template-columns: 1fr; }
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: #5f6368;
+}
+
+label.checkbox {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #202124;
+}
+
+label span {
+  font-weight: 500;
+}
+
+input {
+  padding: 9px 12px;
+  border: 1px solid #dadce0;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #202124;
+  background: white;
+}
+
+input:focus {
+  outline: none;
+  border-color: #4285F4;
+}
+
+input[readonly] {
+  background: #f5f6fa;
+  color: #5f6368;
+}
+
+small {
+  color: #9aa0a6;
+  font-size: 12px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 0 4px;
+}
+
+.btn-primary {
+  background: #4285F4;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 9px 20px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #3367d6;
+}
+
+.btn-primary:disabled {
+  background: #a9c7fb;
+  cursor: not-allowed;
+}
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid #dadce0;
+  color: #5f6368;
+  border-radius: 6px;
+  padding: 9px 20px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-ghost:hover {
+  background: #f5f5f5;
+}
+
+.error-message {
+  background: #ffebee;
+  color: #c62828;
+  padding: 12px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.empty {
+  text-align: center;
+  color: #5f6368;
+  padding: 40px;
+}

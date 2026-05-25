@@ -1,0 +1,68 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Google Sans', 'Segoe UI', Roboto, sans-serif;
+  background: #f8f9fa;
+  color: #202124;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+}
+.btn-validate:hover {
+  background-color: #4cb462;
+}
+
+.btn-container {
+  /*display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  background-color: #fff;
+  border-top: 1px solid #ccc;*/
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.right-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-refresh {
+  background-color: #218838;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  height: 30px;
+}
+
+.btn-refresh:hover {
+  background-color: #4cb462;
+}
+
+.p-ripple.p-button.p-component.p-confirmdialog-reject-button {
+  background-color: #4285F4;
+}
+
+.p-ripple.p-button.p-component.p-confirmdialog-accept-button {
+  background-color: #4285F4;
+}
+.error-item {
+  border-left: 4px solid red;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  background: #fff5f5;
+}

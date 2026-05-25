@@ -1,0 +1,70 @@
+<header class="top-header">
+  <div class="header-left">
+    <span class="material-icons header-logo">dashboard</span>
+    <h1 class="header-title">CoreApp with SSO</h1>
+  </div>
+
+  <div class="header-right">
+    <div class="launcher-wrapper">
+      <button class="nine-dot-btn" (click)="toggleAppLauncher()" title="App Launcher">
+        <div class="dot-grid">
+          @for (i of [1,2,3,4,5,6,7,8,9]; track i) {
+            <span class="dot"></span>
+          }
+        </div>
+      </button>
+
+      @if (showAppLauncher()) {
+        <div class="app-launcher-popup" (mouseleave)="showAppLauncher.set(false)">
+          <div class="launcher-header">
+            <span>Applications</span>
+          </div>
+          <div class="app-grid">
+            @if (loading()) {
+              <div class="loading-state">
+                <span class="spinner-large"></span>
+              </div>
+            } @else {
+              @for (app of apps(); track app.id) {
+                <div class="app-tile" (click)="openApp(app)" [title]="app.description">
+                  <div class="app-icon" [style.background-color]="app.iconColor">
+                    <span class="material-icons">{{ app.iconName }}</span>
+                  </div>
+                  <span class="app-name">{{ app.name }}</span>
+                </div>
+              }
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="user-avatar" (click)="toggleMenu()">
+      {{ getUserInitial() }}
+    </div>
+
+    @if (showUserMenu()) {
+      <div class="user-menu" (mouseleave)="showUserMenu.set(false)">
+        <div class="user-info">
+          <div class="avatar-large">{{ getUserInitial() }}</div>
+          <div class="user-details">
+            <span class="user-name">{{ auth.currentUser()?.fullName }}</span>
+            <span class="user-email">{{ auth.currentUser()?.email }}</span>
+          </div>
+        </div>
+        <div class="menu-divider"></div>
+        @if (isTenantAdmin()) {
+          <button class="menu-item" (click)="openTenantAdmin()">
+            <span class="material-icons">admin_panel_settings</span>
+            Tenant admin
+          </button>
+          <div class="menu-divider"></div>
+        }
+        <button class="menu-item" (click)="logout()">
+          <span class="material-icons">logout</span>
+          Sign Out
+        </button>
+      </div>
+    }
+  </div>
+</header>

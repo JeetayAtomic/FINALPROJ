@@ -1,0 +1,257 @@
+.admin-shell {
+  min-height: 100vh;
+  background: #f5f6fa;
+}
+
+.admin-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 12px 24px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.admin-topbar .title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-topbar h1 {
+  font-size: 20px;
+  margin: 0;
+  color: #202124;
+}
+
+.admin-topbar .material-icons {
+  color: #4285F4;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-email {
+  font-size: 13px;
+  color: #5f6368;
+}
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  color: #5f6368;
+}
+
+.btn-ghost:hover {
+  background: #f5f5f5;
+}
+
+.admin-content {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.toolbar {
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-primary {
+  background: #4285F4;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-primary:hover {
+  background: #3367d6;
+}
+
+.btn-primary .material-icons {
+  font-size: 18px;
+}
+
+.error-message {
+  background: #ffebee;
+  color: #c62828;
+  padding: 12px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.empty {
+  background: white;
+  padding: 40px;
+  text-align: center;
+  color: #5f6368;
+  border-radius: 8px;
+}
+
+.tenant-table {
+  width: 100%;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  border-collapse: collapse;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.tenant-table th,
+.tenant-table td {
+  text-align: left;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+}
+
+.tenant-table thead {
+  background: #fafbfc;
+}
+
+.tenant-table th {
+  color: #5f6368;
+  font-weight: 500;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.tenant-table tr.inactive {
+  opacity: 0.5;
+}
+
+.tenant-name {
+  font-weight: 500;
+  color: #202124;
+}
+
+.tenant-sub {
+  font-size: 12px;
+  color: #5f6368;
+  margin-top: 2px;
+}
+
+.mono {
+  font-family: Consolas, monospace;
+  font-size: 13px;
+  color: #5f6368;
+}
+
+.status {
+  background: #f0f0f0;
+  color: #5f6368;
+  border-radius: 12px;
+  padding: 2px 10px;
+  font-size: 12px;
+}
+
+.status.active {
+  background: #e6f4ea;
+  color: #137333;
+}
+
+.col-actions {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: #4285F4;
+  cursor: pointer;
+  font-size: 13px;
+  padding: 4px 8px;
+}
+
+.btn-link:hover {
+  text-decoration: underline;
+}
+
+.btn-link.danger {
+  color: #c62828;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  border-radius: 10px;
+  padding: 24px;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.modal h3 {
+  margin: 0 0 4px;
+  font-size: 17px;
+}
+
+.modal .hint {
+  color: #5f6368;
+  font-size: 12px;
+  margin: 0 0 16px;
+}
+
+.modal form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: #5f6368;
+}
+
+.modal label span { font-weight: 500; }
+
+.modal input,
+.modal select {
+  padding: 9px 12px;
+  border: 1px solid #dadce0;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #202124;
+  background: white;
+}
+
+.modal input:focus,
+.modal select:focus { outline: none; border-color: #4285F4; }
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 4px;
+}

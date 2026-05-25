@@ -1,0 +1,150 @@
+<div class="form-shell">
+  <header class="form-topbar">
+    <button class="btn-back" (click)="cancel()">
+      <span class="material-icons">arrow_back</span>
+    </button>
+    <h1>{{ isEdit() ? 'Edit tenant' : 'New tenant' }}</h1>
+  </header>
+
+  @if (loading()) {
+    <div class="card empty">Loading…</div>
+  } @else {
+    <form (ngSubmit)="submit()" class="form-content" #f="ngForm">
+      @if (error()) {
+        <div class="error-message">
+          <span class="material-icons">error_outline</span>
+          {{ error() }}
+        </div>
+      }
+
+      <section class="card">
+        <h2>Identity</h2>
+        <div class="grid two-col">
+          <label>
+            <span>Name *</span>
+            <input
+              name="name"
+              [(ngModel)]="model.name"
+              (blur)="suggestDbName()"
+              required
+              maxlength="100"
+            />
+          </label>
+          <label>
+            <span>Client code *</span>
+            <input name="clientCode" [(ngModel)]="model.clientCode" required maxlength="50" />
+          </label>
+          <label>
+            <span>Database name *</span>
+            <input
+              name="dbName"
+              [(ngModel)]="model.dbName"
+              [readonly]="isEdit()"
+              pattern="^[A-Za-z0-9_]+$"
+              required
+              maxlength="128"
+            />
+            @if (isEdit()) {
+              <small>Cannot be changed after creation.</small>
+            } @else {
+              <small>Letters, digits, underscores only.</small>
+            }
+          </label>
+          <label>
+            <span>Organization ID</span>
+            <input name="organizationId" [(ngModel)]="model.organizationId" maxlength="50" />
+          </label>
+          <label>
+            <span>Template ID</span>
+            <input name="templateId" [(ngModel)]="model.templateId" maxlength="50" />
+          </label>
+          @if (isEdit()) {
+            <label class="checkbox">
+              <input type="checkbox" name="isActive" [(ngModel)]="model.isActive" />
+              <span>Active</span>
+            </label>
+          }
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Folder paths</h2>
+        <div class="grid two-col">
+          <label>
+            <span>Client folder</span>
+            <input name="clientFolderPath" [(ngModel)]="model.clientFolderPath" maxlength="500" />
+          </label>
+          <label>
+            <span>Raw folder</span>
+            <input name="rawFolderPath" [(ngModel)]="model.rawFolderPath" maxlength="500" />
+          </label>
+          <label>
+            <span>Processed folder</span>
+            <input name="processedFolderPath" [(ngModel)]="model.processedFolderPath" maxlength="500" />
+          </label>
+          <label>
+            <span>Error folder</span>
+            <input name="errorFolderPath" [(ngModel)]="model.errorFolderPath" maxlength="500" />
+          </label>
+          <label>
+            <span>Publish folder</span>
+            <input name="publishFolderPath" [(ngModel)]="model.publishFolderPath" maxlength="500" />
+          </label>
+          <label>
+            <span>JSON folder</span>
+            <input name="jsonFolderPath" [(ngModel)]="model.jsonFolderPath" maxlength="500" />
+          </label>
+        </div>
+      </section>
+
+      @if (!isEdit()) {
+        <section class="card">
+          <h2>Initial administrator</h2>
+          <p style="margin:-8px 0 12px;color:#5f6368;font-size:12px;">
+            Created on tenant provisioning. This user can log in immediately and manage tenant users/roles.
+          </p>
+          <div class="grid two-col">
+            <label>
+              <span>Full name *</span>
+              <input
+                name="initialAdminFullName"
+                [(ngModel)]="model.initialAdminFullName"
+                required
+                maxlength="100"
+              />
+            </label>
+            <label>
+              <span>Email *</span>
+              <input
+                name="initialAdminEmail"
+                type="email"
+                [(ngModel)]="model.initialAdminEmail"
+                required
+                maxlength="150"
+              />
+            </label>
+            <label>
+              <span>Password *</span>
+              <input
+                name="initialAdminPassword"
+                type="password"
+                [(ngModel)]="model.initialAdminPassword"
+                required
+                minlength="6"
+                placeholder="Min 6 characters"
+              />
+              <small>If this email already exists on the platform, the existing user is added to this tenant and this password is ignored.</small>
+            </label>
+          </div>
+        </section>
+      }
+
+      <div class="actions">
+        <button type="button" class="btn-ghost" (click)="cancel()">Cancel</button>
+        <button type="submit" class="btn-primary" [disabled]="submitting() || !f.valid">
+          {{ submitting() ? 'Saving…' : (isEdit() ? 'Save changes' : 'Create tenant') }}
+        </button>
+      </div>
+    </form>
+  }
+</div>

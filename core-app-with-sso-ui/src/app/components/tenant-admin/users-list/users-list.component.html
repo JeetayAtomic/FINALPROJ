@@ -1,0 +1,74 @@
+<div class="shell">
+  <header class="topbar">
+    <div class="title">
+      <span class="material-icons">admin_panel_settings</span>
+      <h1>Tenant admin</h1>
+      <nav class="tabs">
+        <a routerLink="/tenant-admin/users" routerLinkActive="active">Users</a>
+        <a routerLink="/tenant-admin/roles" routerLinkActive="active">Roles</a>
+        <a routerLink="/tenant-admin/templates" routerLinkActive="active">Templates</a>
+        <a routerLink="/tenant-admin/api-keys" routerLinkActive="active">API Keys</a>
+      </nav>
+    </div>
+    <div>
+      <button class="btn-ghost" (click)="goDashboard()">Back to dashboard</button>
+      <button class="btn-ghost" (click)="logout()">Sign out</button>
+    </div>
+  </header>
+
+  <div class="content">
+    <div class="toolbar">
+      <h2 style="margin:0;font-size:18px;">Users ({{ users().length }})</h2>
+      <button class="btn-primary" (click)="create()">
+        <span class="material-icons">person_add</span>
+        Add user
+      </button>
+    </div>
+
+    @if (error()) {
+      <div class="error-message">
+        <span class="material-icons">error_outline</span>
+        {{ error() }}
+      </div>
+    }
+
+    @if (loading()) {
+      <div class="empty">Loading…</div>
+    } @else if (users().length === 0) {
+      <div class="empty">No users yet. Click "Add user" to invite one.</div>
+    } @else {
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Added</th>
+            <th class="col-actions"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (u of users(); track u.userId) {
+            <tr [class.inactive]="!u.isActive">
+              <td class="primary-col">{{ u.fullName }}</td>
+              <td>{{ u.email }}</td>
+              <td><span class="pill">{{ u.roleName }}</span></td>
+              <td>
+                <span class="pill" [class.active]="u.isActive">
+                  {{ u.isActive ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td>{{ u.membershipCreatedAt | date:'yyyy-MM-dd' }}</td>
+              <td class="col-actions">
+                <button class="btn-link" (click)="edit(u)">Edit</button>
+                <button class="btn-link" (click)="resetPassword(u)">Reset pw</button>
+                <button class="btn-link danger" (click)="remove(u)">Remove</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+</div>

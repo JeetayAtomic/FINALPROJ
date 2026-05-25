@@ -1,0 +1,30 @@
+<div class="select-container">
+  <div class="select-card">
+    <div class="select-header">
+      <span class="material-icons logo-icon">apartment</span>
+      <h1>Choose a workspace</h1>
+      <p>You belong to more than one tenant. Pick one to continue.</p>
+    </div>
+
+    @if (error()) {
+      <div class="error-message">
+        <span class="material-icons">error_outline</span>
+        {{ error() }}
+      </div>
+    }
+
+    <ul class="tenant-list">
+      @for (t of tenants; track t.tenantId) {
+        <li class="tenant-item" (click)="pick(t.tenantId)" [class.disabled]="loading()">
+          <div class="tenant-meta">
+            <div class="tenant-name">{{ t.name }}</div>
+            <div class="tenant-sub">{{ t.slug }} &middot; {{ t.role }}</div>
+          </div>
+          <span class="material-icons">chevron_right</span>
+        </li>
+      }
+    </ul>
+
+    <button type="button" class="btn-link" (click)="cancel()">Sign out</button>
+  </div>
+</div>

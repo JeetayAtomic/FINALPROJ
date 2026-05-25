@@ -1,0 +1,77 @@
+<div class="shell">
+  <header class="form-topbar">
+    <button class="btn-back" (click)="cancel()">
+      <span class="material-icons">arrow_back</span>
+    </button>
+    <h1>{{ isEdit() ? 'Edit user' : 'Add user' }}</h1>
+  </header>
+
+  @if (loading()) {
+    <div class="form-content"><div class="card empty">Loading…</div></div>
+  } @else {
+    <form (ngSubmit)="submit()" class="form-content" #f="ngForm">
+      @if (error()) {
+        <div class="error-message">
+          <span class="material-icons">error_outline</span>
+          {{ error() }}
+        </div>
+      }
+
+      <section class="card">
+        <h2>Membership</h2>
+        <div class="grid two-col">
+          <label>
+            <span>Full name *</span>
+            <input name="fullName" [(ngModel)]="model.fullName" required maxlength="100" />
+          </label>
+          <label>
+            <span>Email *</span>
+            <input
+              name="email"
+              type="email"
+              [(ngModel)]="model.email"
+              [readonly]="isEdit()"
+              required
+              maxlength="150"
+            />
+            @if (isEdit()) { <small>Email cannot be changed.</small> }
+          </label>
+          @if (!isEdit()) {
+            <label>
+              <span>Initial password *</span>
+              <input
+                name="password"
+                type="password"
+                [(ngModel)]="model.password"
+                minlength="6"
+                placeholder="Min 6 characters (ignored for existing users)"
+              />
+              <small>Only required when the email is new to the platform.</small>
+            </label>
+          }
+          <label>
+            <span>Role *</span>
+            <select name="roleName" [(ngModel)]="model.roleName" required>
+              @for (r of roles(); track r.id) {
+                <option [value]="r.name">{{ r.name }}</option>
+              }
+            </select>
+          </label>
+          @if (isEdit()) {
+            <label class="checkbox">
+              <input type="checkbox" name="isActive" [(ngModel)]="model.isActive" />
+              <span>Active</span>
+            </label>
+          }
+        </div>
+      </section>
+
+      <div class="form-actions">
+        <button type="button" class="btn-ghost" (click)="cancel()">Cancel</button>
+        <button type="submit" class="btn-primary" [disabled]="submitting() || !f.valid">
+          {{ submitting() ? 'Saving…' : (isEdit() ? 'Save changes' : 'Create user') }}
+        </button>
+      </div>
+    </form>
+  }
+</div>

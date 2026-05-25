@@ -1,0 +1,192 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "cli": {
+    "packageManager": "npm",
+    "analytics": false
+  },
+  "newProjectRoot": "projects",
+  "projects": {
+    "core-app-with-sso-ui": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:class":       { "skipTests": true },
+        "@schematics/angular:component":   { "skipTests": true },
+        "@schematics/angular:directive":   { "skipTests": true },
+        "@schematics/angular:guard":       { "skipTests": true },
+        "@schematics/angular:interceptor": { "skipTests": true },
+        "@schematics/angular:pipe":        { "skipTests": true },
+        "@schematics/angular:resolver":    { "skipTests": true },
+        "@schematics/angular:service":     { "skipTests": true }
+      },
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "src/main.ts",
+            "tsConfig": "tsconfig.app.json",
+            "assets": [
+                { "glob": "**/*", "input": "public" },
+                { "glob": "web.config", "input": "src" }
+              ],
+            "styles": [ "node_modules/primeicons/primeicons.css", "src/styles.css" ]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                { "type": "initial",           "maximumWarning": "2.23mb", "maximumError": "2MB" },
+                { "type": "anyComponentStyle", "maximumWarning": "2.24mb",   "maximumError": "2MB" }
+              ],
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ]
+            },
+            "development": { "optimization": false, "extractLicenses": false, "sourceMap": true }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "options": {
+            "proxyConfig": "proxy.conf.json"
+          },
+          "configurations": {
+            "production":  { "buildTarget": "core-app-with-sso-ui:build:production"  },
+            "development": { "buildTarget": "core-app-with-sso-ui:build:development" }
+          },
+          "defaultConfiguration": "development"
+        }
+      }
+    },
+
+    "hr": {
+      "projectType": "application",
+      "root": "projects/hr",
+      "sourceRoot": "projects/hr/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "projects/hr/src/main.ts",
+            "index":   "projects/hr/src/index.html",
+            "tsConfig": "projects/hr/tsconfig.app.json",
+            "outputPath": "dist/hr",
+            "assets": [{ "glob": "web.config", "input": "projects/hr/src" }]
+          },
+          "configurations": {
+            "production": {
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "projects/shared-sso/src/environment.ts",
+                  "with": "projects/shared-sso/src/environment.prod.ts"
+                }
+              ]
+            },
+            "development": { "optimization": false, "extractLicenses": false, "sourceMap": true }
+          },
+          "defaultConfiguration": "development"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "options": { "port": 4201 },
+          "configurations": {
+            "development": { "buildTarget": "hr:build:development" },
+            "production":  { "buildTarget": "hr:build:production"  }
+          },
+          "defaultConfiguration": "development"
+        }
+      }
+    },
+
+    "finance": {
+      "projectType": "application",
+      "root": "projects/finance",
+      "sourceRoot": "projects/finance/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "projects/finance/src/main.ts",
+            "index":   "projects/finance/src/index.html",
+            "tsConfig": "projects/finance/tsconfig.app.json",
+            "outputPath": "dist/finance",
+            "assets": [{ "glob": "web.config", "input": "projects/finance/src" }]
+          },
+          "configurations": {
+            "production": {
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "projects/shared-sso/src/environment.ts",
+                  "with": "projects/shared-sso/src/environment.prod.ts"
+                }
+              ]
+            },
+            "development": { "optimization": false, "extractLicenses": false, "sourceMap": true }
+          },
+          "defaultConfiguration": "development"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "options": { "port": 4202 },
+          "configurations": {
+            "development": { "buildTarget": "finance:build:development" },
+            "production":  { "buildTarget": "finance:build:production"  }
+          },
+          "defaultConfiguration": "development"
+        }
+      }
+    },
+
+    "inventory": {
+      "projectType": "application",
+      "root": "projects/inventory",
+      "sourceRoot": "projects/inventory/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "projects/inventory/src/main.ts",
+            "index":   "projects/inventory/src/index.html",
+            "tsConfig": "projects/inventory/tsconfig.app.json",
+            "outputPath": "dist/inventory",
+            "assets": [{ "glob": "web.config", "input": "projects/inventory/src" }]
+          },
+          "configurations": {
+            "production": {
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "projects/shared-sso/src/environment.ts",
+                  "with": "projects/shared-sso/src/environment.prod.ts"
+                }
+              ]
+            },
+            "development": { "optimization": false, "extractLicenses": false, "sourceMap": true }
+          },
+          "defaultConfiguration": "development"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "options": { "port": 4203 },
+          "configurations": {
+            "development": { "buildTarget": "inventory:build:development" },
+            "production":  { "buildTarget": "inventory:build:production"  }
+          },
+          "defaultConfiguration": "development"
+        }
+      }
+    }
+  }
+}

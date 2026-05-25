@@ -1,0 +1,110 @@
+<div class="admin-shell">
+  <header class="admin-topbar">
+    <div class="title">
+      <span class="material-icons">apartment</span>
+      <h1>Super admin</h1>
+      <nav class="tabs" style="margin-left:24px;display:flex;gap:8px;">
+        <a routerLink="/admin/tenants"   routerLinkActive="active" style="padding:6px 14px;border-radius:6px;font-size:13px;color:#5f6368;text-decoration:none;">Tenants</a>
+        <a routerLink="/admin/templates" routerLinkActive="active" style="padding:6px 14px;border-radius:6px;font-size:13px;color:#5f6368;text-decoration:none;">Templates</a>
+        <a routerLink="/admin/lookup"    routerLinkActive="active" style="padding:6px 14px;border-radius:6px;font-size:13px;color:#5f6368;text-decoration:none;">Tenant's Templates</a>
+      </nav>
+    </div>
+    <div class="actions">
+      <span class="user-email">{{ auth.currentUser()?.email }}</span>
+      <button class="btn-ghost" (click)="logout()">Sign out</button>
+    </div>
+  </header>
+
+  <div class="admin-content">
+    <div class="toolbar" style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:16px;">
+      <div>
+        <h2 style="margin:0;font-size:18px;">JSON Templates ({{ filtered().length }})</h2>
+        <div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:6px;">
+          @for (c of tenantCounts(); track c.name) {
+            <span style="background:#e8f0fe;color:#1a73e8;padding:2px 10px;border-radius:10px;font-size:12px;">
+              {{ c.name }}: {{ c.count }}
+            </span>
+          }
+        </div>
+      </div>
+      <label style="font-size:13px;color:#5f6368;display:flex;flex-direction:column;gap:4px;">
+        <span>Filter by tenant</span>
+        <select [(ngModel)]="filterValue" (change)="tenantFilter.set(filterValue)" style="padding:8px 12px;border:1px solid #dadce0;border-radius:6px;font-size:14px;min-width:220px;">
+          <option value="">All tenants</option>
+          @for (t of tenants(); track t.id) {
+            <option [value]="t.id">{{ t.name }}</option>
+          }
+        </select>
+      </label>
+    </div>
+
+    @if (error()) {
+      <div class="error-message">
+        <span class="material-icons">error_outline</span>
+        {{ error() }}
+      </div>
+    }
+
+    @if (loading()) {
+      <div class="empty">Loading…</div>
+    } @else if (filtered().length === 0) {
+      <div class="empty">No templates found.</div>
+    } @else {
+      <table class="tenant-table">
+        <thead>
+          <tr>
+            <th>Tenant</th>
+            <th>Client code</th>
+            <th>Template</th>
+            <th>Version</th>
+            <th>Updated</th>
+            <th>Updated by</th>
+            <th class="col-actions"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of filtered(); track r.tenantId + '-' + r.templateId) {
+            <tr>
+              <td class="tenant-name">{{ r.tenantName }}</td>
+              <td class="mono">{{ r.clientCode }}</td>
+              <td>
+                <div class="tenant-name">{{ r.templateName }}</div>
+                @if (r.description) {
+                  <div class="tenant-sub">{{ r.description }}</div>
+                }
+              </td>
+              <td><span class="status">v{{ r.version }}</span></td>
+              <td>{{ (r.lastUpdatedAt || r.createdAt) | date:'yyyy-MM-dd HH:mm' }}</td>
+              <td>{{ r.lastUpdatedBy || r.createdBy }}</td>
+              <td class="col-actions">
+                <button class="btn-link" (click)="view(r)">View JSON</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+
+  @if (selected(); as s) {
+    <div class="modal-backdrop" (click)="closePanel()">
+      <div class="modal" (click)="$event.stopPropagation()" style="max-width:760px;">
+        <h3>{{ s.templateName }} <span style="font-size:13px;color:#5f6368;font-weight:400;">— {{ s.tenantName }} (v{{ s.version }})</span></h3>
+        @if (s.description) { <p class="hint">{{ s.description }}</p> }
+        @if (selectedLoading()) {
+          <p style="color:#5f6368;">Loading content…</p>
+        } @else if (selectedError()) {
+          <div class="error-message">
+            <span class="material-icons">error_outline</span>
+            {{ selectedError() }}
+          </div>
+        } @else {
+          <pre style="background:#fafbfc;border:1px solid #e0e0e0;border-radius:6px;padding:14px;font-family:Consolas,monospace;font-size:12px;line-height:1.5;max-height:60vh;overflow:auto;">{{ selectedJson() }}</pre>
+        }
+        <div class="modal-actions">
+          <button type="button" class="btn-ghost" (click)="closePanel()">Close</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

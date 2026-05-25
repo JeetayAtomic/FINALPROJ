@@ -1,0 +1,124 @@
+<div class="admin-shell">
+  <header class="admin-topbar">
+    <div class="title">
+      <span class="material-icons">apartment</span>
+      <h1>Super admin</h1>
+      <nav class="tabs" style="margin-left:24px;display:flex;gap:8px;">
+        <a routerLink="/admin/tenants"   routerLinkActive="active" style="padding:6px 14px;border-radius:6px;font-size:13px;color:#5f6368;text-decoration:none;">Tenants</a>
+        <a routerLink="/admin/templates" routerLinkActive="active" style="padding:6px 14px;border-radius:6px;font-size:13px;color:#5f6368;text-decoration:none;">Templates</a>
+        <a routerLink="/admin/lookup"    routerLinkActive="active" style="padding:6px 14px;border-radius:6px;font-size:13px;color:#5f6368;text-decoration:none;">Tenant's Templates</a>
+      </nav>
+    </div>
+    <div class="actions">
+      <span class="user-email">{{ auth.currentUser()?.email }}</span>
+      <button class="btn-ghost" (click)="logout()">Sign out</button>
+    </div>
+  </header>
+
+  <div class="admin-content">
+    <div class="toolbar">
+      <button class="btn-primary" (click)="create()">
+        <span class="material-icons">add</span>
+        New tenant
+      </button>
+    </div>
+
+    @if (error()) {
+      <div class="error-message">
+        <span class="material-icons">error_outline</span>
+        {{ error() }}
+      </div>
+    }
+
+    @if (loading()) {
+      <div class="empty">Loading…</div>
+    } @else if (tenants().length === 0) {
+      <div class="empty">No tenants yet. Click "New tenant" to create one.</div>
+    } @else {
+      <table class="tenant-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Client code</th>
+            <th>DB name</th>
+            <th>Organization</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th class="col-actions"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (t of tenants(); track t.id) {
+            <tr [class.inactive]="!t.isActive">
+              <td>
+                <div class="tenant-name">{{ t.name }}</div>
+                <div class="tenant-sub">{{ t.slug }}</div>
+              </td>
+              <td>{{ t.clientCode }}</td>
+              <td class="mono">{{ t.dbName }}</td>
+              <td>{{ t.organizationId || '—' }}</td>
+              <td>
+                <span class="status" [class.active]="t.isActive">
+                  {{ t.isActive ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td>{{ t.createdDate | date:'yyyy-MM-dd' }}</td>
+              <td class="col-actions">
+                <button class="btn-link" (click)="edit(t)">Edit</button>
+                @if (t.isActive) {
+                  <button class="btn-link" (click)="openSeed(t)">Seed admin</button>
+                  <button class="btn-link danger" (click)="deactivate(t)">Deactivate</button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+
+  @if (seedOpen()) {
+    <div class="modal-backdrop" (click)="closeSeed()">
+      <div class="modal" (click)="$event.stopPropagation()">
+        <h3>Seed user into "{{ seedTarget()?.name }}"</h3>
+        <p class="hint">If the email already exists on the platform, that user is invited into this tenant instead of a new one being created.</p>
+
+        @if (seedError()) {
+          <div class="error-message">
+            <span class="material-icons">error_outline</span>
+            {{ seedError() }}
+          </div>
+        }
+
+        <form (ngSubmit)="submitSeed()" #sf="ngForm">
+          <label>
+            <span>Full name *</span>
+            <input name="fullName" [(ngModel)]="seedModel.fullName" required maxlength="100" />
+          </label>
+          <label>
+            <span>Email *</span>
+            <input name="email" type="email" [(ngModel)]="seedModel.email" required maxlength="150" />
+          </label>
+          <label>
+            <span>Password</span>
+            <input name="password" type="password" [(ngModel)]="seedModel.password" minlength="6" placeholder="Only for new users (min 6)" />
+          </label>
+          <label>
+            <span>Role *</span>
+            <select name="roleName" [(ngModel)]="seedModel.roleName" required>
+              <option value="Admin">Admin</option>
+              <option value="User">User</option>
+            </select>
+          </label>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-ghost" (click)="closeSeed()">Cancel</button>
+            <button type="submit" class="btn-primary" [disabled]="seedSubmitting() || !sf.valid">
+              {{ seedSubmitting() ? 'Saving…' : 'Create' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>

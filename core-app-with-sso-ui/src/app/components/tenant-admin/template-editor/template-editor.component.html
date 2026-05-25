@@ -1,0 +1,76 @@
+<div class="editor-shell">
+  <header class="form-topbar">
+    <button class="btn-back" (click)="cancel()">
+      <span class="material-icons">arrow_back</span>
+    </button>
+    <h1>{{ isEdit() ? 'Edit template' : 'New template' }}</h1>
+    @if (isEdit()) {
+      <span class="version-badge">v{{ version() }}</span>
+    }
+  </header>
+
+  @if (loading()) {
+    <div class="editor-content"><div class="card empty">Loading…</div></div>
+  } @else {
+    <form (ngSubmit)="submit()" class="editor-content" #f="ngForm">
+      @if (error()) {
+        <div class="error-message">
+          <span class="material-icons">error_outline</span>
+          {{ error() }}
+        </div>
+      }
+
+      <section class="card meta-card">
+        <div class="meta-grid">
+          <label>
+            <span>Name *</span>
+            <input name="name" [(ngModel)]="name" required maxlength="100" />
+          </label>
+          <label>
+            <span>Description</span>
+            <input name="description" [(ngModel)]="description" maxlength="500" />
+          </label>
+        </div>
+      </section>
+
+      <section class="card json-card">
+        <div class="json-header">
+          <h2>JSON Content</h2>
+          <div class="json-actions">
+            <button type="button" class="btn-small" (click)="prettyPrint()">
+              <span class="material-icons" style="font-size:16px;">auto_fix_high</span>
+              Format
+            </button>
+            <button type="button" class="btn-small" (click)="validateJson()">
+              <span class="material-icons" style="font-size:16px;">check_circle</span>
+              Validate
+            </button>
+          </div>
+        </div>
+
+        @if (jsonError()) {
+          <div class="json-error">
+            <span class="material-icons">error</span>
+            {{ jsonError() }}
+          </div>
+        }
+
+        <textarea
+          name="jsonContent"
+          [(ngModel)]="jsonContent"
+          (blur)="validateJson()"
+          required
+          class="json-textarea"
+          spellcheck="false"
+        ></textarea>
+      </section>
+
+      <div class="form-actions">
+        <button type="button" class="btn-ghost" (click)="cancel()">Cancel</button>
+        <button type="submit" class="btn-primary" [disabled]="submitting() || !f.valid || !!jsonError()">
+          {{ submitting() ? 'Saving…' : (isEdit() ? 'Save changes' : 'Create template') }}
+        </button>
+      </div>
+    </form>
+  }
+</div>

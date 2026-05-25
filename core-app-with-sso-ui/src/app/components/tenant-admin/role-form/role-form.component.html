@@ -1,0 +1,66 @@
+<div class="shell">
+  <header class="form-topbar">
+    <button class="btn-back" (click)="cancel()">
+      <span class="material-icons">arrow_back</span>
+    </button>
+    <h1>{{ isEdit() ? 'Edit role' : 'New role' }}</h1>
+  </header>
+
+  @if (loading()) {
+    <div class="form-content"><div class="card empty">Loading…</div></div>
+  } @else {
+    <form (ngSubmit)="submit()" class="form-content" #f="ngForm">
+      @if (error()) {
+        <div class="error-message">
+          <span class="material-icons">error_outline</span>
+          {{ error() }}
+        </div>
+      }
+
+      <section class="card">
+        <h2>Role</h2>
+        <div class="grid two-col">
+          <label>
+            <span>Name *</span>
+            <input
+              name="name"
+              [(ngModel)]="name"
+              required
+              maxlength="50"
+              [readonly]="isSystemRenameLocked()"
+            />
+            @if (isSystemRenameLocked()) { <small>System roles cannot be renamed.</small> }
+          </label>
+          <label>
+            <span>Description</span>
+            <input name="description" [(ngModel)]="description" maxlength="250" />
+          </label>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Applications ({{ selected().size }} / {{ apps().length }})</h2>
+        @if (apps().length === 0) {
+          <div class="empty">No apps subscribed to this tenant yet.</div>
+        } @else {
+          <div class="app-picker">
+            @for (a of apps(); track a.id) {
+              <label class="app-pick" [class.selected]="isSelected(a.id)">
+                <input type="checkbox" [checked]="isSelected(a.id)" (change)="toggle(a.id)" />
+                <span class="icon material-icons" [style.background]="a.iconColor">{{ a.iconName }}</span>
+                <span>{{ a.name }}</span>
+              </label>
+            }
+          </div>
+        }
+      </section>
+
+      <div class="form-actions">
+        <button type="button" class="btn-ghost" (click)="cancel()">Cancel</button>
+        <button type="submit" class="btn-primary" [disabled]="submitting() || !f.valid">
+          {{ submitting() ? 'Saving…' : (isEdit() ? 'Save changes' : 'Create role') }}
+        </button>
+      </div>
+    </form>
+  }
+</div>
