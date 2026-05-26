@@ -1,8 +1,10 @@
 import { Component, computed, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { ApplicationService } from '../../services/application.service';
+import { openOrFocusAppTab } from '../../services/app-tab-launcher';
 import { ApplicationDto } from '../../models/app.models';
 
 @Component({
@@ -42,15 +44,10 @@ export class HeaderComponent implements OnInit {
   }
 
   openApp(app: ApplicationDto): void {
-    this.appService.generateSSOToken(app.id).subscribe({
-      next: (res) => {
-        window.open(res.redirectUrl, '_blank');
-        this.showAppLauncher.set(false);
-      },
-      error: () => {
-        window.open(app.baseUrl, '_blank');
-        this.showAppLauncher.set(false);
-      }
+    this.showAppLauncher.set(false);
+    openOrFocusAppTab(app, async () => {
+      const res = await firstValueFrom(this.appService.generateSSOToken(app.id));
+      return res.redirectUrl;
     });
   }
 

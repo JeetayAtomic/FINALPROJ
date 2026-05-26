@@ -1,8 +1,10 @@
 import { Component, OnInit, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../header/header.component';
+import { firstValueFrom } from 'rxjs';
 import { ApplicationService } from '../../services/application.service';
 import { AuthService } from '../../services/auth.service';
+import { openOrFocusAppTab } from '../../services/app-tab-launcher';
 import { ApplicationDto } from '../../models/app.models';
 
 @Component({
@@ -31,9 +33,9 @@ export class DashboardComponent implements OnInit {
   }
 
   openApp(app: ApplicationDto): void {
-    this.appService.generateSSOToken(app.id).subscribe({
-      next: (res) => window.open(res.redirectUrl, '_blank'),
-      error: () => window.open(app.baseUrl, '_blank')
+    openOrFocusAppTab(app, async () => {
+      const res = await firstValueFrom(this.appService.generateSSOToken(app.id));
+      return res.redirectUrl;
     });
   }
 }
