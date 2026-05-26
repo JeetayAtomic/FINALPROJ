@@ -88,11 +88,11 @@ GO
 IF NOT EXISTS (SELECT * FROM Applications)
 BEGIN
     INSERT INTO Applications (Name, Description, BaseUrl, IconName, IconColor, DisplayOrder) VALUES
-    ('HR Portal', 'Human Resources Management', 'https://hr.yourcompany.com', 'people', '#4285F4', 1),
-    ('Finance', 'Financial Management System', 'https://finance.yourcompany.com', 'account_balance', '#EA4335', 2),
+    ('HR Portal', 'Human Resources Management', 'http://localhost:5301/hr', 'people', '#4285F4', 1),
+    ('Finance', 'Financial Management System', 'http://localhost:5302/finance', 'account_balance', '#EA4335', 2),
     ('Project Mgmt', 'Project Management Tool', 'https://projects.yourcompany.com', 'assignment', '#FBBC05', 3),
     ('CRM', 'Customer Relationship Management', 'https://crm.yourcompany.com', 'contacts', '#34A853', 4),
-    ('Inventory', 'Inventory Management System', 'https://inventory.yourcompany.com', 'inventory_2', '#FF6D01', 5),
+    ('Inventory', 'Inventory Management System', 'http://localhost:5303/inventory', 'inventory_2', '#FF6D01', 5),
     ('Reports', 'Business Intelligence & Reports', 'https://reports.yourcompany.com', 'analytics', '#46BDC6', 6),
     ('Email', 'Corporate Email System', 'https://mail.yourcompany.com', 'email', '#7B1FA2', 7),
     ('Calendar', 'Team Calendar & Scheduling', 'https://calendar.yourcompany.com', 'calendar_month', '#0097A7', 8),
