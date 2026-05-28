@@ -6,5 +6,6 @@ bootstrapSampleApp({
   slug: 'inventory',
   color: '#FF6D01',
   apiBaseUrl: ssoEnvironment.apiBaseUrl,
+  dashboardUrl: ssoEnvironment.dashboardUrl,
   storageKey: 'sampleapp_inventory'
 });

@@ -4,6 +4,7 @@ using CoreAppwithSSO.API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CoreAppwithSSO.API.Migrations.Sso
 {
     [DbContext(typeof(SsoDbContext))]
-    partial class SsoDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260527091822_UpdateAppBaseUrlsToIis")]
+    partial class UpdateAppBaseUrlsToIis
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

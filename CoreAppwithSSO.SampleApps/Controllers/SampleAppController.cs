@@ -1,6 +1,7 @@
 using CoreAppwithSSO.SampleApps.Services;
 using CoreAppwithSSO.SampleApps.Views;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace CoreAppwithSSO.SampleApps.Controllers;
 
@@ -29,7 +30,20 @@ public abstract class SampleAppController : ControllerBase
     protected abstract string AccentColor { get; }
     protected abstract IReadOnlyList<DashboardTile> Tiles { get; }
 
-    private string LoginUrl => _config["Dashboard:LoginUrl"] ?? DefaultLoginUrl;
+    /// <summary>
+    /// Central SSO login URL with this app's root attached as <c>returnUrl</c>, so that
+    /// after re-authenticating, the dashboard can mint an SSO token and bounce the user
+    /// back to the app they were on.
+    /// </summary>
+    private string LoginUrl
+    {
+        get
+        {
+            var baseLogin = _config["Dashboard:LoginUrl"] ?? DefaultLoginUrl;
+            var returnUrl = $"{Request.Scheme}://{Request.Host}/{AppSlug}";
+            return QueryHelpers.AddQueryString(baseLogin, "returnUrl", returnUrl);
+        }
+    }
 
     protected async Task<IActionResult> ShowIndexAsync(CancellationToken ct)
     {

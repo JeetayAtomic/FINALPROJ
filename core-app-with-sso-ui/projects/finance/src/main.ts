@@ -6,5 +6,6 @@ bootstrapSampleApp({
   slug: 'finance',
   color: '#EA4335',
   apiBaseUrl: ssoEnvironment.apiBaseUrl,
+  dashboardUrl: ssoEnvironment.dashboardUrl,
   storageKey: 'sampleapp_finance'
 });

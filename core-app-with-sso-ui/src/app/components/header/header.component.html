@@ -5,15 +5,19 @@
     } @else {
       <span class="material-icons header-logo">dashboard</span>
     }
-    <div class="header-title-block">
-      <h1 class="header-title">CoreApp with SSO</h1>
-      @if (auth.currentUser()?.tenantName) {
-        <span class="header-tenant">{{ auth.currentUser()?.tenantName }}</span>
-      }
-    </div>
+    @if (auth.currentUser()?.tenantName) {
+      <span class="header-tenant">{{ auth.currentUser()?.tenantName }}</span>
+    }
   </div>
 
   <div class="header-right">
+    @if (auth.currentUser()) {
+      <div class="header-user-info">
+        <span class="header-user-name">{{ auth.currentUser()?.fullName }}</span>
+        <span class="header-user-role">{{ auth.currentUser()?.role }}</span>
+      </div>
+    }
+
     <div class="launcher-wrapper">
       <button class="nine-dot-btn" (click)="toggleAppLauncher()" title="App Launcher">
         <div class="dot-grid">

@@ -20,7 +20,7 @@ import { SessionService } from './session.service';
             You need to launch it from the Dashboard so it receives a valid SSO token.
           </p>
           <p *ngIf="notice()" class="notice">{{ notice() }}</p>
-          <a class="btn" href="http://localhost:4200" target="_self">Open Dashboard</a>
+          <a class="btn" [href]="loginUrl" target="_self">Sign in</a>
         </div>
       </div>
     </div>
@@ -39,11 +39,13 @@ import { SessionService } from './session.service';
 })
 export class LandingComponent implements OnInit {
   notice = signal<string | null>(null);
+  loginUrl = '';
   constructor(
     @Inject(APP_CONFIG) public config: SampleAppConfig,
     private session: SessionService
   ) {}
   ngOnInit(): void {
     this.notice.set(this.session.readNoticeOnce());
+    this.loginUrl = this.session.buildLoginUrl();
   }
 }

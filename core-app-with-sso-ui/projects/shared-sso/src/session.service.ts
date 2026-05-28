@@ -68,28 +68,45 @@ export class SessionService implements OnDestroy {
     );
   }
 
-  /** Signs the user out everywhere. Server revokes all sessions for (UserId, TenantId). */
+  /**
+   * Signs the user out everywhere and bounces the browser to the central SSO
+   * login page with a returnUrl pointing back to this app — so re-authenticating
+   * lands the user where they started, not on the dashboard.
+   */
   logout(): void {
     const s = this._session();
     if (!s) {
-      this.router.navigate(['/']);
+      window.location.href = this.buildLoginUrl();
       return;
     }
     this.http.post(`${this.config.apiBaseUrl}/api/sso/logout`, { sessionId: s.sessionId })
       .pipe(catchError(() => of(null)))
-      .subscribe(() => this.clearLocalAndGoHome('You have been signed out.'));
+      .subscribe(() => {
+        this.clearLocal();
+        window.location.href = this.buildLoginUrl();
+      });
   }
 
-  /** Called when the server tells us the session is revoked. */
+  /** Build the SSO login URL with this app's origin attached as returnUrl. */
+  buildLoginUrl(): string {
+    const ret = encodeURIComponent(window.location.origin);
+    return `${this.config.dashboardUrl}/login?returnUrl=${ret}`;
+  }
+
+  /** Called when the server tells us the session is revoked (cross-app logout). */
   private clearLocalAndGoHome(reason?: string): void {
-    this.poll?.unsubscribe();
-    this.poll = undefined;
-    this._session.set(null);
-    localStorage.removeItem(this.storageKey);
+    this.clearLocal();
     if (reason) {
       sessionStorage.setItem(this.noticeKey, reason);
     }
     this.router.navigate(['/']);
+  }
+
+  private clearLocal(): void {
+    this.poll?.unsubscribe();
+    this.poll = undefined;
+    this._session.set(null);
+    localStorage.removeItem(this.storageKey);
   }
 
   private startPolling(): void {

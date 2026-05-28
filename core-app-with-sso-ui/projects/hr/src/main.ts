@@ -6,5 +6,6 @@ bootstrapSampleApp({
   slug: 'hr',
   color: '#4285F4',
   apiBaseUrl: ssoEnvironment.apiBaseUrl,
+  dashboardUrl: ssoEnvironment.dashboardUrl,
   storageKey: 'sampleapp_hr'
 });

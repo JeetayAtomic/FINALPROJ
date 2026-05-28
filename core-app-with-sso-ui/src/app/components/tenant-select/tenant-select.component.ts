@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { ApplicationService } from '../../services/application.service';
 import { TenantSummary } from '../../models/app.models';
 
 @Component({
@@ -16,7 +17,11 @@ export class TenantSelectComponent {
   error = signal('');
   loading = signal(false);
 
-  constructor(private auth: AuthService, private router: Router) {
+  constructor(
+    private auth: AuthService,
+    private router: Router,
+    private appService: ApplicationService
+  ) {
     this.tenants = auth.getPendingTenants();
 
     // No interim state — kick back to login.
@@ -31,7 +36,7 @@ export class TenantSelectComponent {
     this.loading.set(true);
 
     this.auth.selectTenant({ tenantId }).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
+      next: () => this.appService.redirectAfterLogin(false),
       error: (err) => {
         this.error.set(err.error?.message || 'Tenant selection failed');
         this.loading.set(false);

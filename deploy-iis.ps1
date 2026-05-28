@@ -1,167 +1,267 @@
+#requires -RunAsAdministrator
+<#
+.SYNOPSIS
+    First-time deploy of CoreAppwithSSO (API + SampleApps + Angular UI) to local IIS.
+
+.DESCRIPTION
+    Creates three IIS sites under C:\inetpub\wwwroot\CoreAppwithSSO\:
+      - CoreAppwithSSO-API          (port 8080)  -> CoreAppwithSSO.API
+      - CoreAppwithSSO-UI           (port 8081)  -> Angular shell + hr/finance/inventory as IIS sub-apps
+      - CoreAppwithSSO-SampleApps   (ports 5301, 5302, 5303) -> CoreAppwithSSO.SampleApps
+        (one app, three bindings; the controllers gate themselves with [Host("*:530x")])
+
+    Use redeploy-iis.ps1 after this for code-only updates (no IIS provisioning).
+
+.PARAMETER TargetRoot
+    Root folder for all deployed artifacts. Defaults to C:\inetpub\wwwroot\CoreAppwithSSO.
+
+.PARAMETER SkipBuild
+    Skip dotnet publish + Angular build (use what's already in publish/* and dist/*).
+
+.PARAMETER SkipNpmInstall
+    Skip `npm ci` in the Angular project.
+#>
+[CmdletBinding()]
 param(
-    [string]$DeployRoot = "C:\inetpub\CoreAppwithSSO",
-    [int]$ApiPort       = 8080,
-    [int]$DashboardPort = 8081,
-    [int]$HrPort        = 4201,
-    [int]$FinancePort   = 4202,
-    [int]$InventoryPort = 4203
+    [string]$TargetRoot     = 'C:\inetpub\wwwroot\CoreAppwithSSO',
+    [int]   $ApiPort        = 8080,
+    [int]   $UiPort         = 8081,
+    [int[]] $SampleAppPorts = @(5301, 5302, 5303),
+    [switch]$SkipBuild,
+    [switch]$SkipNpmInstall
 )
 
-# Self-elevate if not running as Administrator
-if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-    Start-Process powershell.exe "-ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs -Wait
-    exit
+$ErrorActionPreference = 'Stop'
+Set-Location -Path $PSScriptRoot
+
+$RepoRoot       = $PSScriptRoot
+$ApiProject     = Join-Path $RepoRoot 'CoreAppwithSSO.API\CoreAppwithSSO.API.csproj'
+$SampleProject  = Join-Path $RepoRoot 'CoreAppwithSSO.SampleApps\CoreAppwithSSO.SampleApps.csproj'
+$AngularRoot    = Join-Path $RepoRoot 'core-app-with-sso-ui'
+
+$ApiPublish     = Join-Path $RepoRoot 'publish\api'
+$SamplePublish  = Join-Path $RepoRoot 'publish\sample-apps'
+
+$ApiTarget      = Join-Path $TargetRoot 'api'
+$SampleTarget   = Join-Path $TargetRoot 'sample-apps'
+$UiTarget       = Join-Path $TargetRoot 'ui'
+
+$ApiSite        = 'CoreAppwithSSO-API'
+$UiSite         = 'CoreAppwithSSO-UI'
+$SampleSite     = 'CoreAppwithSSO-SampleApps'
+$ApiPool        = 'CoreAppwithSSO-API'
+$UiPool         = 'CoreAppwithSSO-UI'
+$SamplePool     = 'CoreAppwithSSO-SampleApps'
+
+$AngularApps = @(
+    @{ Name = 'shell';     Source = 'dist\core-app-with-sso-ui\browser'; Target = '' },
+    @{ Name = 'hr';        Source = 'dist\hr\browser';                   Target = 'hr' },
+    @{ Name = 'finance';   Source = 'dist\finance\browser';              Target = 'finance' },
+    @{ Name = 'inventory'; Source = 'dist\inventory\browser';            Target = 'inventory' }
+)
+
+function Step($msg) { Write-Host "==> $msg" -ForegroundColor Cyan }
+function Info($msg) { Write-Host "    $msg" -ForegroundColor DarkGray }
+
+# --- Sanity checks --------------------------------------------------------
+if (-not (Get-Service W3SVC -ErrorAction SilentlyContinue)) {
+    throw 'IIS (W3SVC) is not installed. Enable IIS via "Turn Windows features on or off" first.'
+}
+Import-Module WebAdministration
+
+if (-not (Get-Command dotnet -ErrorAction SilentlyContinue)) {
+    throw 'dotnet SDK not found on PATH.'
+}
+if (-not (Get-Command npm -ErrorAction SilentlyContinue)) {
+    throw 'npm not found on PATH (needed for the Angular build).'
 }
 
-$ErrorActionPreference = "Stop"
-$SrcRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
+# --- Build / publish ------------------------------------------------------
+if (-not $SkipBuild) {
+    Step "dotnet publish API -> $ApiPublish"
+    if (Test-Path $ApiPublish) { Remove-Item $ApiPublish -Recurse -Force }
+    dotnet publish $ApiProject -c Release -o $ApiPublish --nologo
+    if ($LASTEXITCODE -ne 0) { throw 'API publish failed' }
 
-# ---------- Verify prerequisites ----------
-Write-Host "`n=== Checking prerequisites ===" -ForegroundColor Cyan
+    Step "dotnet publish SampleApps -> $SamplePublish"
+    if (Test-Path $SamplePublish) { Remove-Item $SamplePublish -Recurse -Force }
+    dotnet publish $SampleProject -c Release -o $SamplePublish --nologo
+    if ($LASTEXITCODE -ne 0) { throw 'SampleApps publish failed' }
 
-# Check IIS feature
-$iis = Get-WindowsOptionalFeature -Online -FeatureName IIS-WebServer
-if ($iis.State -ne 'Enabled') {
-    Write-Error "IIS is not installed. Enable it via: Enable-WindowsOptionalFeature -Online -FeatureName IIS-WebServer -All"
-}
-
-# Check URL Rewrite Module
-$rewriteDll = "$env:SystemRoot\System32\inetsrv\rewrite.dll"
-if (-not (Test-Path $rewriteDll)) {
-    Write-Warning "IIS URL Rewrite Module not found. Angular SPA routing will NOT work."
-    Write-Warning "Download from: https://www.iis.net/downloads/microsoft/url-rewrite"
-}
-
-# Check ASP.NET Core Module
-$ancmDll = "$env:ProgramFiles\IIS\Asp.Net Core Module\V2\aspnetcorev2.dll"
-if (-not (Test-Path $ancmDll)) {
-    Write-Warning "ASP.NET Core Module V2 not found. Install the .NET 10 Hosting Bundle."
-    Write-Warning "Download from: https://dotnet.microsoft.com/download/dotnet/10.0"
-}
-
-Import-Module WebAdministration -ErrorAction Stop
-
-# ---------- Stop app pool before copying (API DLL is otherwise locked by IIS) ----------
-$poolName = "CoreAppwithSSOPool"
-if (Test-Path "IIS:\AppPools\$poolName") {
-    $state = (Get-WebAppPoolState -Name $poolName).Value
-    if ($state -ne 'Stopped') {
-        Write-Host "`n=== Stopping app pool $poolName (was $state) ===" -ForegroundColor Cyan
-        Stop-WebAppPool -Name $poolName
-        Start-Sleep -Seconds 2
+    Push-Location $AngularRoot
+    try {
+        if (-not $SkipNpmInstall) {
+            Step 'npm ci'
+            npm ci
+            if ($LASTEXITCODE -ne 0) { throw 'npm ci failed' }
+        }
+        Step 'npm run build:all (production)'
+        npm run build:all
+        if ($LASTEXITCODE -ne 0) { throw 'Angular build failed' }
+    } finally {
+        Pop-Location
     }
 }
 
-# ---------- Copy files ----------
-Write-Host "`n=== Copying published files ===" -ForegroundColor Cyan
-
-$sites = @{
-    "api"       = "$SrcRoot\publish\api"
-    "dashboard" = "$SrcRoot\core-app-with-sso-ui\dist\core-app-with-sso-ui\browser"
-    "hr"        = "$SrcRoot\core-app-with-sso-ui\dist\hr\browser"
-    "finance"   = "$SrcRoot\core-app-with-sso-ui\dist\finance\browser"
-    "inventory" = "$SrcRoot\core-app-with-sso-ui\dist\inventory\browser"
+foreach ($p in @($ApiPublish, $SamplePublish)) {
+    if (-not (Test-Path $p)) { throw "Missing publish output: $p (rerun without -SkipBuild)" }
+}
+foreach ($app in $AngularApps) {
+    $src = Join-Path $AngularRoot $app.Source
+    if (-not (Test-Path $src)) { throw "Missing Angular build output: $src" }
 }
 
-foreach ($name in $sites.Keys) {
-    $dest = "$DeployRoot\$name"
-    if (-not (Test-Path $dest)) { New-Item -Path $dest -ItemType Directory -Force | Out-Null }
-    Write-Host "  Copying $name -> $dest"
-    Copy-Item -Path "$($sites[$name])\*" -Destination $dest -Recurse -Force
+# --- Stop sites/pools before copying (avoid locked DLLs) -----------------
+foreach ($s in @($ApiSite, $UiSite, $SampleSite)) {
+    if (Test-Path "IIS:\Sites\$s") {
+        Step "Stopping site $s"
+        Stop-Website -Name $s -ErrorAction SilentlyContinue
+    }
+}
+foreach ($p in @($ApiPool, $UiPool, $SamplePool)) {
+    if (Test-Path "IIS:\AppPools\$p") {
+        Step "Stopping pool $p"
+        Stop-WebAppPool -Name $p -ErrorAction SilentlyContinue
+    }
+}
+# Brief pause so file handles release.
+Start-Sleep -Seconds 2
+
+# --- Layout target folder -------------------------------------------------
+foreach ($d in @($TargetRoot, $ApiTarget, $SampleTarget, $UiTarget)) {
+    if (-not (Test-Path $d)) { New-Item -ItemType Directory -Path $d -Force | Out-Null }
 }
 
-# Ensure logs dir for API
-$logsDir = "$DeployRoot\api\logs"
-if (-not (Test-Path $logsDir)) { New-Item -Path $logsDir -ItemType Directory -Force | Out-Null }
-
-# ---------- Create App Pool ----------
-Write-Host "`n=== Creating application pool ===" -ForegroundColor Cyan
-
-if (-not (Test-Path "IIS:\AppPools\$poolName")) {
-    New-WebAppPool -Name $poolName | Out-Null
-    Write-Host "  Created pool: $poolName"
-} else {
-    Write-Host "  Pool already exists: $poolName"
+function CopyTree($src, $dst) {
+    Step "Copy $src -> $dst"
+    & robocopy $src $dst /MIR /NFL /NDL /NJH /NJS /NC /NS /NP | Out-Null
+    # robocopy exit codes 0-7 are success; >=8 is failure
+    if ($LASTEXITCODE -ge 8) { throw "robocopy failed (exit $LASTEXITCODE) for $src -> $dst" }
+    $script:LASTEXITCODE = 0
 }
 
-# .NET CLR = No Managed Code (for ASP.NET Core in-process hosting)
-Set-ItemProperty "IIS:\AppPools\$poolName" -Name managedRuntimeVersion -Value ""
-Set-ItemProperty "IIS:\AppPools\$poolName" -Name startMode -Value "AlwaysRunning"
+CopyTree $ApiPublish    $ApiTarget
+CopyTree $SamplePublish $SampleTarget
 
-# ---------- Create IIS Sites ----------
-Write-Host "`n=== Creating IIS websites ===" -ForegroundColor Cyan
+# Angular: shell at root, sub-apps in subfolders (each is its own IIS app)
+$ShellSrc = Join-Path $AngularRoot $AngularApps[0].Source
+CopyTree $ShellSrc $UiTarget
+foreach ($app in $AngularApps | Where-Object { $_.Target }) {
+    $src = Join-Path $AngularRoot $app.Source
+    $dst = Join-Path $UiTarget $app.Target
+    CopyTree $src $dst
+}
 
-$siteConfigs = @(
-    @{ Name = "CoreAppwithSSO-API";       Port = $ApiPort;       Path = "$DeployRoot\api" },
-    @{ Name = "CoreAppwithSSO-UI";        Port = $DashboardPort; Path = "$DeployRoot\dashboard" },
-    @{ Name = "CoreAppwithSSO-HR";        Port = $HrPort;        Path = "$DeployRoot\hr" },
-    @{ Name = "CoreAppwithSSO-Finance";   Port = $FinancePort;   Path = "$DeployRoot\finance" },
-    @{ Name = "CoreAppwithSSO-Inventory"; Port = $InventoryPort; Path = "$DeployRoot\inventory" }
-)
-
-foreach ($cfg in $siteConfigs) {
-    $existing = Get-Website -Name $cfg.Name -ErrorAction SilentlyContinue
-    if ($existing) {
-        Write-Host "  Updating: $($cfg.Name) -> port $($cfg.Port)"
-        Set-ItemProperty "IIS:\Sites\$($cfg.Name)" -Name physicalPath -Value $cfg.Path
+# --- IIS provisioning -----------------------------------------------------
+function EnsurePool($name) {
+    if (-not (Test-Path "IIS:\AppPools\$name")) {
+        Step "Creating app pool $name"
+        New-WebAppPool -Name $name | Out-Null
     } else {
-        Write-Host "  Creating: $($cfg.Name) -> port $($cfg.Port)"
-        New-Website -Name $cfg.Name `
-                    -Port $cfg.Port `
-                    -PhysicalPath $cfg.Path `
-                    -ApplicationPool $poolName `
+        Info "App pool $name already exists"
+    }
+    # No Managed Code (ASP.NET Core runs out-of-CLR via ANCM)
+    Set-ItemProperty "IIS:\AppPools\$name" -Name managedRuntimeVersion -Value ''
+    Set-ItemProperty "IIS:\AppPools\$name" -Name managedPipelineMode   -Value Integrated
+    Set-ItemProperty "IIS:\AppPools\$name" -Name startMode             -Value AlwaysRunning
+}
+
+function EnsureSite($name, $physicalPath, $pool, $bindings) {
+    if (-not (Test-Path "IIS:\Sites\$name")) {
+        $first = $bindings[0]
+        Step "Creating site $name on $($first.Protocol):$($first.Port)"
+        New-Website -Name $name `
+                    -PhysicalPath $physicalPath `
+                    -ApplicationPool $pool `
+                    -Port $first.Port `
                     -Force | Out-Null
+        # First binding was set by New-Website; add any extras.
+        foreach ($b in ($bindings | Select-Object -Skip 1)) {
+            New-WebBinding -Name $name -Protocol $b.Protocol -Port $b.Port -IPAddress '*' -HostHeader '' | Out-Null
+        }
+    } else {
+        Info "Site $name already exists - updating"
+        Set-ItemProperty "IIS:\Sites\$name" -Name physicalPath    -Value $physicalPath
+        Set-ItemProperty "IIS:\Sites\$name" -Name applicationPool -Value $pool
+
+        # Sync bindings: remove anything not in $bindings, add anything missing.
+        $existing = Get-WebBinding -Name $name
+        $wanted   = $bindings | ForEach-Object { "$($_.Protocol)/*:$($_.Port):" }
+        foreach ($b in $existing) {
+            if ($wanted -notcontains $b.bindingInformation -and `
+                $wanted -notcontains ("$($b.protocol)/$($b.bindingInformation)")) {
+                Info "Removing stale binding $($b.protocol) $($b.bindingInformation)"
+                Remove-WebBinding -Name $name -BindingInformation $b.bindingInformation -Protocol $b.protocol
+            }
+        }
+        foreach ($b in $bindings) {
+            $have = Get-WebBinding -Name $name -Protocol $b.Protocol -Port $b.Port -ErrorAction SilentlyContinue
+            if (-not $have) {
+                Info "Adding binding $($b.Protocol):$($b.Port)"
+                New-WebBinding -Name $name -Protocol $b.Protocol -Port $b.Port -IPAddress '*' -HostHeader '' | Out-Null
+            }
+        }
     }
 }
 
-# ---------- Set folder permissions ----------
-Write-Host "`n=== Setting folder permissions ===" -ForegroundColor Cyan
+EnsurePool $ApiPool
+EnsurePool $UiPool
+EnsurePool $SamplePool
 
-$acl = Get-Acl $DeployRoot
-$poolIdentity = "IIS AppPool\$poolName"
-$rule = New-Object System.Security.AccessControl.FileSystemAccessRule(
-    $poolIdentity, "ReadAndExecute", "ContainerInherit,ObjectInherit", "None", "Allow"
-)
-$acl.SetAccessRule($rule)
-Set-Acl -Path $DeployRoot -AclObject $acl
+EnsureSite $ApiSite    $ApiTarget    $ApiPool    @(@{ Protocol = 'http'; Port = $ApiPort })
+EnsureSite $UiSite     $UiTarget     $UiPool     @(@{ Protocol = 'http'; Port = $UiPort  })
+EnsureSite $SampleSite $SampleTarget $SamplePool ($SampleAppPorts | ForEach-Object { @{ Protocol = 'http'; Port = $_ } })
 
-# API needs write for logs
-$apiLogsAcl = Get-Acl "$DeployRoot\api\logs"
-$writeRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
-    $poolIdentity, "Modify", "ContainerInherit,ObjectInherit", "None", "Allow"
-)
-$apiLogsAcl.SetAccessRule($writeRule)
-Set-Acl -Path "$DeployRoot\api\logs" -AclObject $apiLogsAcl
+# UI sub-applications (hr/finance/inventory) so each has its own web.config (Angular fallback).
+# Always remove + recreate: Set-ItemProperty on an existing sub-app's physicalPath
+# raises ArgumentNullException via the IIS provider in some states.
+foreach ($app in $AngularApps | Where-Object { $_.Target }) {
+    $appPath  = "/$($app.Target)"
+    $physical = Join-Path $UiTarget $app.Target
+    $iisPath  = "IIS:\Sites\$UiSite$appPath"
 
-Write-Host "  Granted ReadAndExecute to $poolIdentity on $DeployRoot"
-Write-Host "  Granted Modify to $poolIdentity on $DeployRoot\api\logs"
-
-# ---------- Start sites ----------
-Write-Host "`n=== Starting websites ===" -ForegroundColor Cyan
-
-foreach ($cfg in $siteConfigs) {
-    Start-Website -Name $cfg.Name -ErrorAction SilentlyContinue
-    Write-Host "  Started: $($cfg.Name)"
+    if (Test-Path $iisPath) {
+        Info "Removing existing sub-app $appPath"
+        Remove-WebApplication -Site $UiSite -Name $app.Target -ErrorAction SilentlyContinue
+    }
+    Step "Creating sub-app $appPath -> $physical"
+    New-WebApplication -Site $UiSite -Name $app.Target `
+                       -PhysicalPath $physical `
+                       -ApplicationPool $UiPool | Out-Null
 }
 
-# ---------- Summary ----------
-Write-Host "`n=== Deployment complete ===" -ForegroundColor Green
-Write-Host ""
-Write-Host "  API (Swagger):  http://localhost:$ApiPort/swagger"
-Write-Host "  Dashboard:      http://localhost:$DashboardPort"
-Write-Host "  HR App:         http://localhost:$HrPort"
-Write-Host "  Finance App:    http://localhost:$FinancePort"
-Write-Host "  Inventory App:  http://localhost:$InventoryPort"
-Write-Host ""
-Write-Host "  Deploy root:    $DeployRoot"
-Write-Host "  App pool:       $poolName"
-Write-Host ""
-Write-Host "IMPORTANT:" -ForegroundColor Yellow
-Write-Host "  1. Ensure the app pool identity ($poolIdentity) has access to SQL Server."
-Write-Host "     Run in SQL Server: CREATE LOGIN [$poolIdentity] FROM WINDOWS;"
-Write-Host "                        ALTER SERVER ROLE sysadmin ADD MEMBER [$poolIdentity];"
-Write-Host "  2. If you changed ports, update:"
-Write-Host "     - appsettings.Production.json -> Cors:Origins"
-Write-Host "     - environment.prod.ts -> apiBaseUrl (then rebuild Angular apps)"
-Write-Host ""
-Read-Host "Press Enter to close"
+# --- Permissions: IIS_IUSRS needs read on the deployment folders ---------
+Step 'Granting IIS_IUSRS read/execute on deployment root'
+& icacls $TargetRoot /grant 'IIS_IUSRS:(OI)(CI)RX' /T /Q | Out-Null
+
+# .NET apps need write to their logs subdir
+foreach ($p in @($ApiTarget, $SampleTarget)) {
+    $logs = Join-Path $p 'logs'
+    if (-not (Test-Path $logs)) { New-Item -ItemType Directory -Path $logs -Force | Out-Null }
+    & icacls $logs /grant 'IIS_IUSRS:(OI)(CI)M' /T /Q | Out-Null
+}
+
+# --- Start everything -----------------------------------------------------
+foreach ($p in @($ApiPool, $UiPool, $SamplePool)) {
+    Step "Starting pool $p"
+    Start-WebAppPool -Name $p
+}
+foreach ($s in @($ApiSite, $UiSite, $SampleSite)) {
+    Step "Starting site $s"
+    Start-Website -Name $s
+}
+
+Write-Host ''
+Write-Host 'Deployed. URLs:' -ForegroundColor Green
+Write-Host "  API:         http://localhost:$ApiPort/"        -ForegroundColor Green
+Write-Host "  Dashboard:   http://localhost:$UiPort/"         -ForegroundColor Green
+foreach ($app in $AngularApps | Where-Object { $_.Target }) {
+    Write-Host ("  {0,-12} http://localhost:{1}/{2}/" -f ($app.Name + ':'), $UiPort, $app.Target) -ForegroundColor Green
+}
+foreach ($port in $SampleAppPorts) {
+    Write-Host "  SampleApps:  http://localhost:$port/"       -ForegroundColor Green
+}
+Write-Host ''
+Write-Host 'If a .NET site shows HTTP 500.19 / 500.30, the AspNetCoreModuleV2 hosting' -ForegroundColor Yellow
+Write-Host 'bundle is probably missing. Install "ASP.NET Core 8 Hosting Bundle" and restart IIS' -ForegroundColor Yellow
+Write-Host '(iisreset).' -ForegroundColor Yellow

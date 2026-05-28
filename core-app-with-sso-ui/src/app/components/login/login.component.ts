@@ -1,8 +1,9 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { ApplicationService } from '../../services/application.service';
 
 @Component({
   selector: 'app-login',
@@ -17,9 +18,18 @@ export class LoginComponent {
   error = signal('');
   loading = signal(false);
 
-  constructor(private auth: AuthService, private router: Router) {
+  constructor(
+    private auth: AuthService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private appService: ApplicationService
+  ) {
+    // Sample apps redirect here with ?returnUrl=<app-root> on logout. Stash it so
+    // it survives the optional /select-tenant hop and the success handler below.
+    this.appService.captureReturnUrl(this.route.snapshot.queryParamMap.get('returnUrl'));
+
     if (auth.isLoggedIn()) {
-      router.navigate([auth.isSuperAdmin() ? '/admin/tenants' : '/dashboard']);
+      this.appService.redirectAfterLogin(auth.isSuperAdmin());
     }
   }
 
@@ -30,13 +40,13 @@ export class LoginComponent {
     this.auth.login({ email: this.email, password: this.password }).subscribe({
       next: (res) => {
         if (res.isSuperAdmin) {
-          this.router.navigate(['/admin/tenants']);
+          this.appService.redirectAfterLogin(true);
           return;
         }
         // Regular user: auto-select single tenant, otherwise show picker.
         if (res.tenants.length === 1) {
           this.auth.selectTenant({ tenantId: res.tenants[0].tenantId }).subscribe({
-            next: () => this.router.navigate(['/dashboard']),
+            next: () => this.appService.redirectAfterLogin(false),
             error: (err) => {
               this.error.set(err.error?.message || 'Tenant selection failed');
               this.loading.set(false);

@@ -1,23 +1,6 @@
 <app-header></app-header>
 
 <main class="dashboard-main">
-  <!-- Welcome section -->
-  <section class="welcome-section">
-    @if (tenantLogoUrl()) {
-      <img class="welcome-logo" [src]="tenantLogoUrl()" [alt]="tenantName() + ' logo'" />
-    }
-    <div class="welcome-text">
-      <h2>Welcome to your Dashboard</h2>
-      <p>
-        @if (tenantName()) {
-          {{ tenantName() }} &middot; Access all your applications from one place
-        } @else {
-          Access all your applications from one place
-        }
-      </p>
-    </div>
-  </section>
-
   <!-- Full App Grid on Dashboard -->
   <section class="apps-section">
     <h3>Your Applications</h3>
