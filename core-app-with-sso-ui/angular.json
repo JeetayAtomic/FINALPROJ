@@ -66,123 +66,44 @@
       }
     },
 
-    "hr": {
+    "election-tracker": {
       "projectType": "application",
-      "root": "projects/hr",
-      "sourceRoot": "projects/hr/src",
-      "prefix": "app",
+      "root": "projects/election-tracker",
+      "sourceRoot": "projects/election-tracker/src",
+      "prefix": "et",
       "architect": {
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "browser": "projects/hr/src/main.ts",
-            "index":   "projects/hr/src/index.html",
-            "tsConfig": "projects/hr/tsconfig.app.json",
-            "outputPath": "dist/hr",
-            "assets": [{ "glob": "web.config", "input": "projects/hr/src" }]
+            "browser": "projects/election-tracker/src/main.ts",
+            "index": "projects/election-tracker/src/index.html",
+            "tsConfig": "projects/election-tracker/tsconfig.app.json",
+            "outputPath": "dist/election-tracker",
+            "styles": [ "projects/election-tracker/src/styles.css" ]
           },
           "configurations": {
             "production": {
               "outputHashing": "all",
               "fileReplacements": [
                 {
-                  "replace": "projects/shared-sso/src/environment.ts",
-                  "with": "projects/shared-sso/src/environment.prod.ts"
+                  "replace": "projects/election-tracker/src/environments/environment.ts",
+                  "with": "projects/election-tracker/src/environments/environment.prod.ts"
                 }
               ]
             },
             "development": { "optimization": false, "extractLicenses": false, "sourceMap": true }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "production"
         },
         "serve": {
           "builder": "@angular/build:dev-server",
-          "options": { "port": 4201 },
-          "configurations": {
-            "development": { "buildTarget": "hr:build:development" },
-            "production":  { "buildTarget": "hr:build:production"  }
-          },
-          "defaultConfiguration": "development"
-        }
-      }
-    },
-
-    "finance": {
-      "projectType": "application",
-      "root": "projects/finance",
-      "sourceRoot": "projects/finance/src",
-      "prefix": "app",
-      "architect": {
-        "build": {
-          "builder": "@angular/build:application",
           "options": {
-            "browser": "projects/finance/src/main.ts",
-            "index":   "projects/finance/src/index.html",
-            "tsConfig": "projects/finance/tsconfig.app.json",
-            "outputPath": "dist/finance",
-            "assets": [{ "glob": "web.config", "input": "projects/finance/src" }]
+            "port": 4210,
+            "proxyConfig": "projects/election-tracker/proxy.conf.json"
           },
           "configurations": {
-            "production": {
-              "outputHashing": "all",
-              "fileReplacements": [
-                {
-                  "replace": "projects/shared-sso/src/environment.ts",
-                  "with": "projects/shared-sso/src/environment.prod.ts"
-                }
-              ]
-            },
-            "development": { "optimization": false, "extractLicenses": false, "sourceMap": true }
-          },
-          "defaultConfiguration": "development"
-        },
-        "serve": {
-          "builder": "@angular/build:dev-server",
-          "options": { "port": 4202 },
-          "configurations": {
-            "development": { "buildTarget": "finance:build:development" },
-            "production":  { "buildTarget": "finance:build:production"  }
-          },
-          "defaultConfiguration": "development"
-        }
-      }
-    },
-
-    "inventory": {
-      "projectType": "application",
-      "root": "projects/inventory",
-      "sourceRoot": "projects/inventory/src",
-      "prefix": "app",
-      "architect": {
-        "build": {
-          "builder": "@angular/build:application",
-          "options": {
-            "browser": "projects/inventory/src/main.ts",
-            "index":   "projects/inventory/src/index.html",
-            "tsConfig": "projects/inventory/tsconfig.app.json",
-            "outputPath": "dist/inventory",
-            "assets": [{ "glob": "web.config", "input": "projects/inventory/src" }]
-          },
-          "configurations": {
-            "production": {
-              "outputHashing": "all",
-              "fileReplacements": [
-                {
-                  "replace": "projects/shared-sso/src/environment.ts",
-                  "with": "projects/shared-sso/src/environment.prod.ts"
-                }
-              ]
-            },
-            "development": { "optimization": false, "extractLicenses": false, "sourceMap": true }
-          },
-          "defaultConfiguration": "development"
-        },
-        "serve": {
-          "builder": "@angular/build:dev-server",
-          "options": { "port": 4203 },
-          "configurations": {
-            "development": { "buildTarget": "inventory:build:development" },
-            "production":  { "buildTarget": "inventory:build:production"  }
+            "production":  { "buildTarget": "election-tracker:build:production"  },
+            "development": { "buildTarget": "election-tracker:build:development" }
           },
           "defaultConfiguration": "development"
         }

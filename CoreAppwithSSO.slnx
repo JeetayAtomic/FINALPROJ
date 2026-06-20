@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="CoreAppwithSSO.API/CoreAppwithSSO.API.csproj" />
+  <Project Path="CoreAppwithSSO.ElectionTracker/CoreAppwithSSO.ElectionTracker.csproj" />
 </Solution>

@@ -4,11 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "start:hr": "ng serve --project=hr",
-    "start:finance": "ng serve --project=finance",
-    "start:inventory": "ng serve --project=inventory",
     "build": "ng build",
-    "build:all": "ng build --configuration=production && ng build hr --configuration=production && ng build finance --configuration=production && ng build inventory --configuration=production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },

@@ -13,10 +13,7 @@ $ErrorActionPreference = 'Stop'
 Set-Location -Path $PSScriptRoot
 
 $apps = @(
-    @{ Name = 'shell';     Source = 'dist\core-app-with-sso-ui\browser'; Target = '' },
-    @{ Name = 'hr';        Source = 'dist\hr\browser';               Target = 'hr' },
-    @{ Name = 'finance';   Source = 'dist\finance\browser';          Target = 'finance' },
-    @{ Name = 'inventory'; Source = 'dist\inventory\browser';        Target = 'inventory' }
+    @{ Name = 'shell';     Source = 'dist\core-app-with-sso-ui\browser'; Target = '' }
 )
 
 function Test-Admin {
@@ -32,8 +29,8 @@ if (-not $SkipInstall) {
 }
 
 if (-not $SkipBuild) {
-    Write-Host '==> npm run build:all' -ForegroundColor Cyan
-    npm run build:all
+    Write-Host '==> npm run build' -ForegroundColor Cyan
+    npm run build
     if ($LASTEXITCODE -ne 0) { throw 'build failed' }
 }
 
@@ -108,9 +105,6 @@ if ($CreateSite) {
 
     Write-Host "`nIIS site '$SiteName' is live at:" -ForegroundColor Green
     Write-Host "  http://localhost:$Port/"          -ForegroundColor Green
-    Write-Host "  http://localhost:$Port/hr/"       -ForegroundColor Green
-    Write-Host "  http://localhost:$Port/finance/"  -ForegroundColor Green
-    Write-Host "  http://localhost:$Port/inventory/" -ForegroundColor Green
 } else {
     Write-Host "`nSkipped IIS site creation. Re-run elevated with -CreateSite to provision." -ForegroundColor Yellow
 }
