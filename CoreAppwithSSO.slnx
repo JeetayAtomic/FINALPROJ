@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="ATM.Core.ISC/ATM.Core.ISC.csproj" />
   <Project Path="CoreAppwithSSO.API/CoreAppwithSSO.API.csproj" />
   <Project Path="CoreAppwithSSO.ElectionTracker/CoreAppwithSSO.ElectionTracker.csproj" />
 </Solution>

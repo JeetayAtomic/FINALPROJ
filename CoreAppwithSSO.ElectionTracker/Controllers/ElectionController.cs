@@ -1,3 +1,4 @@
+using CoreAppwithSSO.ElectionTracker.Middleware;
 using CoreAppwithSSO.ElectionTracker.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -100,18 +101,18 @@ public class ElectionController : ControllerBase
 
     public record CallbackRequest(string Token);
 
-    private async Task<SsoSessionStatus?> RequireActiveSessionAsync(CancellationToken ct)
+    private Task<SsoSessionStatus?> RequireActiveSessionAsync(CancellationToken ct)
     {
-        if (!TryGetSessionId(out var sessionId))
-            return null;
-
-        var status = await _sso.GetSessionAsync(sessionId, ct);
-        if (!status.Active || status.ApplicationId != ExpectedApplicationId)
+        // SessionTenantMiddleware has already re-validated the session against the SSO API and,
+        // on success, stashed the status here — reuse it instead of calling the SSO API again.
+        if (HttpContext.Items[SessionTenantMiddleware.SessionItemKey] is SsoSessionStatus status
+            && status.Active && status.ApplicationId == ExpectedApplicationId)
         {
-            ClearSessionCookie();
-            return null;
+            return Task.FromResult<SsoSessionStatus?>(status);
         }
-        return status;
+
+        ClearSessionCookie();
+        return Task.FromResult<SsoSessionStatus?>(null);
     }
 
     private bool TryGetSessionId(out int sessionId)
