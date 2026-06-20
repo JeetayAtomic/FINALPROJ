@@ -37,10 +37,10 @@ namespace CoreAppwithSSO.ElectionTracker.Controllers
         }
 
         [HttpGet(UrlConstant.GetBoothList)]
-        public async Task<IActionResult> GetBoothList([FromQuery] int terminalId = 0)
+        public async Task<IActionResult> GetBoothList([FromQuery] int wardId = 0)
         {
             var response = await HandleListAsync(
-                () => boothService.GetBoothList(terminalId),
+                () => boothService.GetBoothList(wardId),
                 Constant.LIST_BOOTH_SUCCESS,
                 Constant.LIST_BOOTH_ERROR
             );

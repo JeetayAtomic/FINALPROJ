@@ -22,9 +22,9 @@ namespace CoreAppwithSSO.ElectionTracker.Services.Implementation
             return null;
         }
 
-        public async Task<List<BoothResponse>> GetBoothList(int terminalId = 0)
+        public async Task<List<BoothResponse>> GetBoothList(int wardId = 0)
         {
-            var response = await boothRepository.GetBoothList(terminalId);
+            var response = await boothRepository.GetBoothList(wardId);
             return mapper.Map<List<BoothResponse>>(response);
         }
 
