@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -54,13 +53,6 @@ builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IEncryptionService, EncryptionService>();
 builder.Services.AddScoped<SuperAdminSeeder>();
 builder.Services.AddSingleton<IApiKeyService, ApiKeyService>();
-builder.Services.AddHttpClient<IClientService, ClientService>((provider,client) =>
-{
-    var settings = provider.GetRequiredService<IOptions<AppSettings>>().Value;
-
-    client.DefaultRequestHeaders.Add("Cache-Control", settings.CacheControl);
-    client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", settings.SubscriptionKey);
-});
 
 // Data Protection keys: persist to SQL (IdentityDbContext) so the key ring survives
 // app pool recycles, redeploys, and is shared across instances behind a load balancer.

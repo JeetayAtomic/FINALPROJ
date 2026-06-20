@@ -21,8 +21,11 @@ export function openOrFocusAppTab(
   const name = appWindowName(app);
   const probe = window.open('', name);
   if (!probe) {
-    // Popup blocker — fall back to a plain open. Have to fetch the URL synchronously-ish.
-    urlProvider().then(url => window.open(url, name));
+    // Popup blocked: a deferred window.open (after the token await) would be blocked too,
+    // so guarantee the redirect by navigating the current tab instead.
+    urlProvider()
+      .then(url => { window.location.href = url; })
+      .catch(() => { /* token failed — leave the dashboard as-is */ });
     return;
   }
 
@@ -39,12 +42,17 @@ export function openOrFocusAppTab(
     // Brand-new tab opened by the probe — load the app URL into it.
     urlProvider()
       .then(url => {
-        try { probe.location.href = url; } catch { /* shouldn't happen, fresh tab is same-origin */ }
-        try { probe.focus(); } catch { /* ignore */ }
+        try {
+          probe.location.href = url;
+          probe.focus();
+        } catch {
+          // Couldn't drive the probe tab — fall back to navigating the current tab.
+          window.location.href = url;
+        }
       })
       .catch(() => {
-        try { probe.location.href = app.baseUrl; } catch { /* ignore */ }
-        try { probe.focus(); } catch { /* ignore */ }
+        // Token mint failed — don't strand a blank tab.
+        try { probe.close(); } catch { /* ignore */ }
       });
   } else {
     // Existing tab — just bring it to the front. No SSO token wasted, no reload.
