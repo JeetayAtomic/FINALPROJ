@@ -12,7 +12,7 @@
 --    dynamic INSERT/UPDATE (CommonUtl.BuildInsertQuery/BuildUpdateQuery) emits one
 --    column per writable property, so the names must stay in sync.
 --  * BoothId is an IDENTITY column and is excluded from INSERT (see BoothRepository).
---  * J_/Agent/Backup/Materials columns hold JSON text (stored as NVARCHAR(MAX)).
+--  * J_Attribute14/15 columns hold JSON text (stored as NVARCHAR(MAX)).
 --  * D_Attribute9..13 are written as parsed DateTime values (CommonUtl.ParseFlexDate).
 -- =============================================================================
 
@@ -36,24 +36,19 @@ BEGIN
 
         -- ---- Booth business columns -------------------------------------
         [BoothCode]          NVARCHAR(50)    NOT NULL,          -- business identity (was "ShortId")
+        [BoothName]          NVARCHAR(100)   NOT NULL,
         [WardId]             INT             NOT NULL,
-        [WardName]           NVARCHAR(200)   NULL,
-        [WardNeighborhood]   NVARCHAR(200)   NULL,
-        [ConstituencyId]     NVARCHAR(50)    NULL,
-        [ConstituencyName]   NVARCHAR(200)   NULL,
+        [BoothNeighborhood]  NVARCHAR(200)   NULL,
+        [ConstituencyId]     INT             NULL,
         [Venue]              NVARCHAR(300)   NULL,
         [Address]            NVARCHAR(500)   NULL,
-        [VoterCount]         INT             NOT NULL CONSTRAINT [DF_ELT_Booth_VoterCount]    DEFAULT (0),
-
-        -- Nested objects persisted as JSON (BoothPerson / BoothMaterials shapes)
-        [Agent]              NVARCHAR(MAX)   NULL,
-        [Backup]             NVARCHAR(MAX)   NULL,
-        [Materials]          NVARCHAR(MAX)   NULL,
-
-        [Accessibility]      BIT             NOT NULL CONSTRAINT [DF_ELT_Booth_Accessibility] DEFAULT (0),
-        [Status]             NVARCHAR(50)    NULL,
+        [AddressVillage]     NVARCHAR(500)   NULL,
+        [AddressStreet]      NVARCHAR(500)   NULL,
+        [Status]             INT             NULL,
+        [Accessibility]      INT			 NULL,   
         [StatusColor]        NVARCHAR(50)    NULL,
-
+        [Latitude]           DECIMAL (10,7)   NULL,
+        [Longitude]          DECIMAL (10,7)   NULL,
         -- ---- BaseModel flexfield columns --------------------------------
         [C_Attribute1]       NVARCHAR(500)   NULL,
         [C_Attribute2]       NVARCHAR(500)   NULL,

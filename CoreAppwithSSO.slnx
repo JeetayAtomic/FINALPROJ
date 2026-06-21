@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="DatabaseScripts/Create_ELT_Booth_Table.sql" />
+  </Folder>
   <Project Path="ATM.Core.ISC/ATM.Core.ISC.csproj" />
   <Project Path="CoreAppwithSSO.API/CoreAppwithSSO.API.csproj" />
   <Project Path="CoreAppwithSSO.ElectionTracker/CoreAppwithSSO.ElectionTracker.csproj" />

@@ -1,8 +1,8 @@
 ﻿using CoreAppwithSSO.ElectionTracker.Models.Domain;
 
-namespace CoreAppwithSSO.ElectionTracker.Models.DTO.Response
+namespace CoreAppwithSSO.ElectionTracker.Models.DTO
 {
-    public class BoothResponse : BaseModel
+    public class BoothDto : BaseModel
     {
         public int BoothId { get; set; }
 
@@ -11,20 +11,20 @@ namespace CoreAppwithSSO.ElectionTracker.Models.DTO.Response
 
         public int WardId { get; set; }
         public string WardName { get; set; } = string.Empty;
-        public string BoothName { get; set; } = string.Empty;
-        public string BoothNeighborhood { get; set; } = string.Empty;
-        public Int32 ConstituencyId { get; set; } = 0;
+        public string WardNeighborhood { get; set; } = string.Empty;
+        public string ConstituencyId { get; set; } = string.Empty;
         public string ConstituencyName { get; set; } = string.Empty;
         public string Venue { get; set; } = string.Empty;
+        public string Address { get; set; } = string.Empty;
+        public int VoterCount { get; set; }
+
+        // Nested objects stored as JSON (see BoothPerson / BoothMaterials for the shape).
         public BoothPerson Agent { get; set; } = new BoothPerson();
+        public string Backup { get; set; } = string.Empty;
         public BoothMaterial Materials { get; set; } = new BoothMaterial();
 
-        public string Address { get; set; } = string.Empty;
-        public string AddressVillage { get; set; } = string.Empty;
-        public string AddressStreet { get; set; } = string.Empty;
-
-        public int Accessibility { get; set; }
-        public int Status { get; set; } = 0;
+        public bool Accessibility { get; set; }
+        public string Status { get; set; } = string.Empty;
         public string StatusColor { get; set; } = string.Empty;
         public double? Latitude { get; set; }
         public double? Longitude { get; set; }
