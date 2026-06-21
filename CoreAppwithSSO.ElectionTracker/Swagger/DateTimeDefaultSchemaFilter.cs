@@ -2,6 +2,7 @@
 using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
+using System.Text.Json.Nodes;
 
 namespace CoreAppwithSSO.ElectionTracker.Swagger
 {
@@ -29,10 +30,12 @@ namespace CoreAppwithSSO.ElectionTracker.Swagger
                 var key = schema.Properties.Keys.FirstOrDefault(
                     k => string.Equals(k, property.Name, StringComparison.OrdinalIgnoreCase));
 
-                if (key != null)
+                // Microsoft.OpenApi v2 exposes Properties as the read-only IOpenApiSchema;
+                // only the concrete OpenApiSchema has settable Example/Default (now JsonNode).
+                if (key != null && schema.Properties[key] is OpenApiSchema propertySchema)
                 {
-                    schema.Properties[key].Example = new OpenApiString(now);
-                    schema.Properties[key].Default = new OpenApiString(now);
+                    propertySchema.Example = JsonValue.Create(now);
+                    propertySchema.Default = JsonValue.Create(now);
                 }
             }
         }

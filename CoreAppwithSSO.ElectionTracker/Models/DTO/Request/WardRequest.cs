@@ -1,6 +1,8 @@
-﻿namespace CoreAppwithSSO.ElectionTracker.Models.Domain
+using CoreAppwithSSO.ElectionTracker.Models.Domain;
+
+namespace CoreAppwithSSO.ElectionTracker.Models.DTO.Request
 {
-    public class Ward : BaseModel
+    public class WardRequest : BaseModel
     {
         public int WardId { get; set; }
         public string WardCode { get; set; } = string.Empty;

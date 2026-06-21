@@ -1,6 +1,12 @@
 <Solution>
   <Folder Name="/Solution Items/">
     <File Path="DatabaseScripts/Create_ELT_Booth_Table.sql" />
+    <File Path="DatabaseScripts/Create_ELT_Constituency_Procedures.sql" />
+    <File Path="DatabaseScripts/Create_ELT_Constituency_Table.sql" />
+    <File Path="DatabaseScripts/Create_ELT_Sector_Procedures.sql" />
+    <File Path="DatabaseScripts/Create_ELT_Sector_Table.sql" />
+    <File Path="DatabaseScripts/Create_ELT_Ward_Procedures.sql" />
+    <File Path="DatabaseScripts/Create_ELT_Ward_Table.sql" />
   </Folder>
   <Project Path="ATM.Core.ISC/ATM.Core.ISC.csproj" />
   <Project Path="CoreAppwithSSO.API/CoreAppwithSSO.API.csproj" />

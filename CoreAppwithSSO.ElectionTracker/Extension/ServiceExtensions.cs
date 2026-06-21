@@ -9,6 +9,7 @@ using CoreAppwithSSO.ElectionTracker.Repository.Interface;
 using CoreAppwithSSO.ElectionTracker.Services;
 using CoreAppwithSSO.ElectionTracker.Services.Implementation;
 using CoreAppwithSSO.ElectionTracker.Services.Interface;
+using CoreAppwithSSO.ElectionTracker.Swagger;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.OpenApi;
 
@@ -43,6 +44,10 @@ namespace CoreAppwithSSO.ElectionTracker.Extension
                 {
                     { new OpenApiSecuritySchemeReference(devTenantScheme, doc), new List<string>() }
                 });
+
+                // Seed example/default values for [DateTimeParameters] columns (BaseModel
+                // D_Attribute9..13) so Swagger pre-fills them with the current timestamp.
+                options.SchemaFilter<DateTimeDefaultSchemaFilter>();
             });
             services.AddHttpContextAccessor();
             services.AddMemoryCache();
@@ -53,9 +58,21 @@ namespace CoreAppwithSSO.ElectionTracker.Extension
             services.AddSingleton<ITenantConnectionResolver, TenantConnectionResolver>();
             services.AddSingleton<ITenantCatalog, TenantCatalog>();
 
-            services.AddAutoMapper(cfg => cfg.AddProfile<BoothProfile>());
+            services.AddAutoMapper(cfg =>
+            {
+                cfg.AddProfile<BoothProfile>();
+                cfg.AddProfile<WardProfile>();
+                cfg.AddProfile<SectorProfile>();
+                cfg.AddProfile<ConstituencyProfile>();
+            });
             services.AddScoped<IBoothRepository, BoothRepository>();
             services.AddScoped<IBoothService, BoothService>();
+            services.AddScoped<IWardRepository, WardRepository>();
+            services.AddScoped<IWardService, WardService>();
+            services.AddScoped<ISectorRepository, SectorRepository>();
+            services.AddScoped<ISectorService, SectorService>();
+            services.AddScoped<IConstituencyRepository, ConstituencyRepository>();
+            services.AddScoped<IConstituencyService, ConstituencyService>();
             services.AddTransient<HeaderPropagationHandler>();
 
             services.AddScoped<IBaseService, BaseService>();
