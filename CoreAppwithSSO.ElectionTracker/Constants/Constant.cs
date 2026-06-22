@@ -59,5 +59,33 @@
         public const string LIST_CONSTITUENCY_SUCCESS = "ATMDIS-LIST_CONSTITUENCY_SUCCESS-M";
         public const string LIST_CONSTITUENCY_ERROR = "ATMDIS-LIST_CONSTITUENCY_ERROR-M";
         #endregion
+
+        #region Voters
+        public const string SAVE_VOTER_SUCCESS = "ATMDIS-VOTER_SUCCESS-M";
+        public const string SAVE_VOTER_ERROR = "ATMDIS-VOTER_ERROR-M";
+
+        public const string GET_VOTER_SUCCESS = "ATMDIS-VOTER_SUCCESS-M";
+        public const string GET_VOTER_ERROR = "ATMDIS-VOTER_ERROR-M";
+
+        public const string SEARCH_VOTER_SUCCESS = "ATMDIS-SEARCH_VOTER_SUCCESS-M";
+        public const string SEARCH_VOTER_ERROR = "ATMDIS-SEARCH_VOTER_ERROR-M";
+
+        public const string LIST_VOTER_SUCCESS = "ATMDIS-LIST_VOTER_SUCCESS-M";
+        public const string LIST_VOTER_ERROR = "ATMDIS-LIST_VOTER_ERROR-M";
+        #endregion
+
+        #region Karyakartas
+        public const string SAVE_KARYAKARTA_SUCCESS = "ATMDIS-KARYAKARTA_SUCCESS-M";
+        public const string SAVE_KARYAKARTA_ERROR = "ATMDIS-KARYAKARTA_ERROR-M";
+
+        public const string GET_KARYAKARTA_SUCCESS = "ATMDIS-KARYAKARTA_SUCCESS-M";
+        public const string GET_KARYAKARTA_ERROR = "ATMDIS-KARYAKARTA_ERROR-M";
+
+        public const string SEARCH_KARYAKARTA_SUCCESS = "ATMDIS-SEARCH_KARYAKARTA_SUCCESS-M";
+        public const string SEARCH_KARYAKARTA_ERROR = "ATMDIS-SEARCH_KARYAKARTA_ERROR-M";
+
+        public const string LIST_KARYAKARTA_SUCCESS = "ATMDIS-LIST_KARYAKARTA_SUCCESS-M";
+        public const string LIST_KARYAKARTA_ERROR = "ATMDIS-LIST_KARYAKARTA_ERROR-M";
+        #endregion
     }
 }

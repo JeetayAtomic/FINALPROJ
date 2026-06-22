@@ -1,22 +1,13 @@
-﻿using CoreAppwithSSO.ElectionTracker.Common;
+using CoreAppwithSSO.ElectionTracker.Common;
+using CoreAppwithSSO.ElectionTracker.Models.Domain;
 
-namespace CoreAppwithSSO.ElectionTracker.Models.Domain
+namespace CoreAppwithSSO.ElectionTracker.Models.DTO.Request
 {
-    public class Karyakarta :BaseModel
+    public class KaryakartaRequest : BaseModel
     {
         public int KaryakartaId { get; set; }
-
-        // Business identity (originally "Id" on the client model).
         public string KaryakartaCode { get; set; } = string.Empty;
-
         public string Name { get; set; } = string.Empty;
-
-        public string FirstName { get; set; } = string.Empty;
-        public string LastName { get; set; } = string.Empty;
-
-        public string FaterName { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-
         public string Initials { get; set; } = string.Empty;
         public string Role { get; set; } = string.Empty;
         public Int32 ConstituencyId { get; set; }

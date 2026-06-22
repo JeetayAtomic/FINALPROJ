@@ -13,5 +13,11 @@
 
         public const string GetConstituencyList = "[ELT].[GetConstituencyList]";
         public const string SearchConstituencyByFilter = "[ELT].[ConstituencySearch]";
+
+        public const string GetVoterList = "[ELT].[GetVoterList]";
+        public const string SearchVoterByFilter = "[ELT].[VoterSearch]";
+
+        public const string GetKaryakartaList = "[ELT].[GetKaryakartaList]";
+        public const string SearchKaryakartaByFilter = "[ELT].[KaryakartaSearch]";
     }
 }

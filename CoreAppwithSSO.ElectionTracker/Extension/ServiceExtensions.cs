@@ -64,6 +64,8 @@ namespace CoreAppwithSSO.ElectionTracker.Extension
                 cfg.AddProfile<WardProfile>();
                 cfg.AddProfile<SectorProfile>();
                 cfg.AddProfile<ConstituencyProfile>();
+                cfg.AddProfile<VoterProfile>();
+                cfg.AddProfile<KaryakartaProfile>();
             });
             services.AddScoped<IBoothRepository, BoothRepository>();
             services.AddScoped<IBoothService, BoothService>();
@@ -73,6 +75,10 @@ namespace CoreAppwithSSO.ElectionTracker.Extension
             services.AddScoped<ISectorService, SectorService>();
             services.AddScoped<IConstituencyRepository, ConstituencyRepository>();
             services.AddScoped<IConstituencyService, ConstituencyService>();
+            services.AddScoped<IVoterRepository, VoterRepository>();
+            services.AddScoped<IVoterService, VoterService>();
+            services.AddScoped<IKaryakartaRepository, KaryakartaRepository>();
+            services.AddScoped<IKaryakartaService, KaryakartaService>();
             services.AddTransient<HeaderPropagationHandler>();
 
             services.AddScoped<IBaseService, BaseService>();
