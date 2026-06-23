@@ -9,7 +9,7 @@ using System.Data;
 
 namespace CoreAppwithSSO.ElectionTracker.Repository.Implementation
 {
-    public class SectorRepository(DapperContext dapperContext) : ISectorRepository
+    public class SectorRepository(DapperContext dapperContext, IEntityCodeRepository entityCodeRepository) : ISectorRepository
     {
         // Schema-qualified, UNbracketed: the dialect's QuoteName brackets each dot-separated
         // part, so "ELT.Sector" becomes [ELT].[Sector]. Storing it pre-bracketed here would be
@@ -78,15 +78,30 @@ namespace CoreAppwithSSO.ElectionTracker.Repository.Implementation
 
         private async Task<SectorResponse?> AddSector(Sector sector)
         {
-            SectorResponse? response = null;
-            using (var connection = dapperContext.CreateConnection())
+            // Code generation and the INSERT share one transaction so a failed insert
+            // rolls back the consumed code sequence (no skipped numbers).
+            using var connection = dapperContext.CreateConnection();
+            connection.Open();
+            using var transaction = connection.BeginTransaction();
+            try
             {
+                sector.Code = await entityCodeRepository.GenerateAsync(
+                    nameof(EntityType.Sector), connection, transaction);
+
                 var parameters = new DynamicParameters();
                 // SectorId is an identity column, so it is excluded from the INSERT.
                 string query = CommonUtl.BuildInsertQuery(parameters, sector, SectorTable, dapperContext.Dialect, ["SectorId"]);
-                response = await connection.QueryFirstOrDefaultAsync<SectorResponse>(query, parameters, commandType: CommandType.Text);
+                var response = await connection.QueryFirstOrDefaultAsync<SectorResponse>(
+                    new CommandDefinition(query, parameters, transaction, commandType: CommandType.Text));
+
+                transaction.Commit();
+                return response;
             }
-            return response;
+            catch
+            {
+                transaction.Rollback();
+                throw;
+            }
         }
 
         private async Task<SectorResponse?> UpdateSector(Sector sector)

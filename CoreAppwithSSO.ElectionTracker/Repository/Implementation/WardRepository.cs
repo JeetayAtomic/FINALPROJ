@@ -9,7 +9,7 @@ using System.Data;
 
 namespace CoreAppwithSSO.ElectionTracker.Repository.Implementation
 {
-    public class WardRepository(DapperContext dapperContext) : IWardRepository
+    public class WardRepository(DapperContext dapperContext, IEntityCodeRepository entityCodeRepository) : IWardRepository
     {
         // Schema-qualified, UNbracketed: the dialect's QuoteName brackets each dot-separated
         // part, so "ELT.Ward" becomes [ELT].[Ward]. Storing it pre-bracketed here would be
@@ -78,15 +78,30 @@ namespace CoreAppwithSSO.ElectionTracker.Repository.Implementation
 
         private async Task<WardResponse?> AddWard(Ward ward)
         {
-            WardResponse? response = null;
-            using (var connection = dapperContext.CreateConnection())
+            // WardCode generation and the INSERT share one transaction so a failed insert
+            // rolls back the consumed code sequence (no skipped numbers).
+            using var connection = dapperContext.CreateConnection();
+            connection.Open();
+            using var transaction = connection.BeginTransaction();
+            try
             {
+                ward.WardCode = await entityCodeRepository.GenerateAsync(
+                    nameof(EntityType.Ward), connection, transaction);
+
                 var parameters = new DynamicParameters();
                 // WardId is an identity column, so it is excluded from the INSERT.
                 string query = CommonUtl.BuildInsertQuery(parameters, ward, WardTable, dapperContext.Dialect, ["WardId"]);
-                response = await connection.QueryFirstOrDefaultAsync<WardResponse>(query, parameters, commandType: CommandType.Text);
+                var response = await connection.QueryFirstOrDefaultAsync<WardResponse>(
+                    new CommandDefinition(query, parameters, transaction, commandType: CommandType.Text));
+
+                transaction.Commit();
+                return response;
             }
-            return response;
+            catch
+            {
+                transaction.Rollback();
+                throw;
+            }
         }
 
         private async Task<WardResponse?> UpdateWard(Ward ward)

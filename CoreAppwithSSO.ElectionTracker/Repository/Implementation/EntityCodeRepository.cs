@@ -14,16 +14,21 @@ namespace CoreAppwithSSO.ElectionTracker.Repository.Implementation
 
         public async Task<string> GenerateAsync(string entityType, CancellationToken ct = default)
         {
-            string query = DBProcedure.GetNextEntityCode;
             using var connection = dapperContext.CreateConnection();
+            return await GenerateAsync(entityType, connection, null, ct);
+        }
 
+        public async Task<string> GenerateAsync(string entityType, IDbConnection connection,
+                                                IDbTransaction? transaction, CancellationToken ct = default)
+        {
             var parameters = new DynamicParameters();
             parameters.Add("@EntityType", entityType, DbType.String);
             // Output string params require an explicit size, or SqlClient throws "invalid size of 0".
             parameters.Add("@GeneratedCode", dbType: DbType.String, direction: ParameterDirection.Output, size: 50);
 
             await connection.ExecuteAsync(new CommandDefinition(
-                query, parameters, commandType: CommandType.StoredProcedure, cancellationToken: ct));
+                DBProcedure.GetNextEntityCode, parameters, transaction,
+                commandType: CommandType.StoredProcedure, cancellationToken: ct));
 
             return parameters.Get<string>("@GeneratedCode");
         }

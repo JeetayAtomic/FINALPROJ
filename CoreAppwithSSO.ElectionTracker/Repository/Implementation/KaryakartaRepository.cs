@@ -9,7 +9,7 @@ using System.Data;
 
 namespace CoreAppwithSSO.ElectionTracker.Repository.Implementation
 {
-    public class KaryakartaRepository(DapperContext dapperContext) : IKaryakartaRepository
+    public class KaryakartaRepository(DapperContext dapperContext, IEntityCodeRepository entityCodeRepository) : IKaryakartaRepository
     {
         // Schema-qualified, UNbracketed: the dialect's QuoteName brackets each dot-separated
         // part, so "ELT.Karyakarta" becomes [ELT].[Karyakarta]. Storing it pre-bracketed here
@@ -78,15 +78,30 @@ namespace CoreAppwithSSO.ElectionTracker.Repository.Implementation
 
         private async Task<KaryakartaResponse?> AddKaryakarta(Karyakarta karyakarta)
         {
-            KaryakartaResponse? response = null;
-            using (var connection = dapperContext.CreateConnection())
+            // KaryakartaCode generation and the INSERT share one transaction so a failed insert
+            // rolls back the consumed code sequence (no skipped numbers).
+            using var connection = dapperContext.CreateConnection();
+            connection.Open();
+            using var transaction = connection.BeginTransaction();
+            try
             {
+                karyakarta.KaryakartaCode = await entityCodeRepository.GenerateAsync(
+                    nameof(EntityType.Karyakarta), connection, transaction);
+
                 var parameters = new DynamicParameters();
                 // KaryakartaId is an identity column, so it is excluded from the INSERT.
                 string query = CommonUtl.BuildInsertQuery(parameters, karyakarta, KaryakartaTable, dapperContext.Dialect, ["KaryakartaId"]);
-                response = await connection.QueryFirstOrDefaultAsync<KaryakartaResponse>(query, parameters, commandType: CommandType.Text);
+                var response = await connection.QueryFirstOrDefaultAsync<KaryakartaResponse>(
+                    new CommandDefinition(query, parameters, transaction, commandType: CommandType.Text));
+
+                transaction.Commit();
+                return response;
             }
-            return response;
+            catch
+            {
+                transaction.Rollback();
+                throw;
+            }
         }
 
         private async Task<KaryakartaResponse?> UpdateKaryakarta(Karyakarta karyakarta)

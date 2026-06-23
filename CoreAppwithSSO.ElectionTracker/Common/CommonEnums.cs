@@ -16,4 +16,14 @@
         // Add more as needed
     }
 
+    public enum EntityType
+    {
+        Booth,
+        Ward,
+        Sector,
+        Constituency,
+        Voter,
+        Karyakarta
+    }
+
 }

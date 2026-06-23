@@ -9,7 +9,7 @@ using System.Data;
 
 namespace CoreAppwithSSO.ElectionTracker.Repository.Implementation
 {
-    public class ConstituencyRepository(DapperContext dapperContext) : IConstituencyRepository
+    public class ConstituencyRepository(DapperContext dapperContext, IEntityCodeRepository entityCodeRepository) : IConstituencyRepository
     {
         // Schema-qualified, UNbracketed: the dialect's QuoteName brackets each dot-separated
         // part, so "ELT.Constituency" becomes [ELT].[Constituency]. Storing it pre-bracketed
@@ -78,15 +78,30 @@ namespace CoreAppwithSSO.ElectionTracker.Repository.Implementation
 
         private async Task<ConstituencyResponse?> AddConstituency(Constituency constituency)
         {
-            ConstituencyResponse? response = null;
-            using (var connection = dapperContext.CreateConnection())
+            // Code generation and the INSERT share one transaction so a failed insert
+            // rolls back the consumed code sequence (no skipped numbers).
+            using var connection = dapperContext.CreateConnection();
+            connection.Open();
+            using var transaction = connection.BeginTransaction();
+            try
             {
+                constituency.Code = await entityCodeRepository.GenerateAsync(
+                    nameof(EntityType.Constituency), connection, transaction);
+
                 var parameters = new DynamicParameters();
                 // ConstituencyId is an identity column, so it is excluded from the INSERT.
                 string query = CommonUtl.BuildInsertQuery(parameters, constituency, ConstituencyTable, dapperContext.Dialect, ["ConstituencyId"]);
-                response = await connection.QueryFirstOrDefaultAsync<ConstituencyResponse>(query, parameters, commandType: CommandType.Text);
+                var response = await connection.QueryFirstOrDefaultAsync<ConstituencyResponse>(
+                    new CommandDefinition(query, parameters, transaction, commandType: CommandType.Text));
+
+                transaction.Commit();
+                return response;
             }
-            return response;
+            catch
+            {
+                transaction.Rollback();
+                throw;
+            }
         }
 
         private async Task<ConstituencyResponse?> UpdateConstituency(Constituency constituency)
