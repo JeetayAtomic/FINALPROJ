@@ -7,4 +7,13 @@
         Female = 2,
         Other = 3
     }
+    public enum ImageType
+    {
+        Driver,
+        Truck,
+        Trailer,
+        Banner
+        // Add more as needed
+    }
+
 }

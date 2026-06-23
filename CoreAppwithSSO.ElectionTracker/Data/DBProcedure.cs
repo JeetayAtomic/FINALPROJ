@@ -19,5 +19,9 @@
 
         public const string GetKaryakartaList = "[ELT].[GetKaryakartaList]";
         public const string SearchKaryakartaByFilter = "[ELT].[KaryakartaSearch]";
+
+        public const string GetNextEntityCode = "usp_GetNextEntityCode";
+        
+
     }
 }

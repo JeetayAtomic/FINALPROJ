@@ -14,7 +14,7 @@ namespace CoreAppwithSSO.ElectionTracker.Models.Domain
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
 
-        public string FaterName { get; set; } = string.Empty;
+        public string FatherName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
 
         public string Initials { get; set; } = string.Empty;

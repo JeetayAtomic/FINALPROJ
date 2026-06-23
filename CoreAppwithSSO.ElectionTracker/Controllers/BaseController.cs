@@ -128,6 +128,16 @@ namespace CoreAppwithSSO.ElectionTracker.Controllers
 
 
 
+        protected async Task<ATMResponse<T?>> HandleUpdateAsync<T>(
+        Func<Task<T?>> action,
+        string successCode,
+        string errorCode,
+        Func<T?, bool>? isEmptyCheck = null)
+        {
+            this.HttpContext.Items["error"] = errorCode;
+            return await HandleGetAsync(action, successCode, errorCode, isEmptyCheck);
+        }
+
         protected async Task<ATMResponse<T?>> HandleUpdateAsync<TId, TRequest, T>(
         TId id,
         TRequest request,

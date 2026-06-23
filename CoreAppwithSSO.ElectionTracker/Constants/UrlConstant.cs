@@ -37,5 +37,19 @@
         public const string GetKaryakartaByKaryakartaId = "api/karyakarta/{id}";
         public const string GetKaryakartaList = "api/karyakarta/list";
         public const string KaryakartaSearch = "api/karyakarta/search";
+
+        #region "Image Upload API"
+        public const string RouteImageUpload = "api/ImageUpload";
+        public const string ImageUpload = "Upload";
+        public const string GetImage = "GetImage";
+        public const string DeleteImage = "DeleteImage";
+        #endregion
+
+
+        #region "Code Generator"
+        public const string GenerateEntityCode = "api/entity/generate";
+        public const string GetEntityCodeConfig = "api/entity/config/{entityType}";
+        public const string UpdateEntityCodeConfig = "api/entity/config/update";
+        #endregion
     }
 }

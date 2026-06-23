@@ -79,10 +79,12 @@ namespace CoreAppwithSSO.ElectionTracker.Extension
             services.AddScoped<IVoterService, VoterService>();
             services.AddScoped<IKaryakartaRepository, KaryakartaRepository>();
             services.AddScoped<IKaryakartaService, KaryakartaService>();
+            services.AddScoped<IEntityCodeRepository, EntityCodeRepository>();
+            services.AddScoped<IEntityCodeService, EntityCodeService>();
             services.AddTransient<HeaderPropagationHandler>();
 
             services.AddScoped<IBaseService, BaseService>();
-            services.AddScoped<ICommonService, CommonService>();
+            //services.AddScoped<ICommonService, CommonService>();
             services.AddScoped<ITokenProvider, TokenProvider>();
             services.AddScoped<ILoggingService, LoggingService>();
 

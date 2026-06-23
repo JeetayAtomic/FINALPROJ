@@ -38,6 +38,7 @@ BEGIN
         -- ---- Voter business columns -------------------------------------
         [EpicNo]                NVARCHAR(50)    NOT NULL,
         [BoothId]               INT             NOT NULL,
+        [ConstituencyId]        INT             NULL,
         [SerialNo]              NVARCHAR(50)    NULL,
         [FullName]              NVARCHAR(200)   NULL,
         [FirstName]             NVARCHAR(100)   NULL,

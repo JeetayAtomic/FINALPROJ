@@ -87,5 +87,25 @@
         public const string LIST_KARYAKARTA_SUCCESS = "ATMDIS-LIST_KARYAKARTA_SUCCESS-M";
         public const string LIST_KARYAKARTA_ERROR = "ATMDIS-LIST_KARYAKARTA_ERROR-M";
         #endregion
+
+        #region Images
+        public const string SAVE_IMAGE_SUCCESS = "ATMDIS-IMAGE_SUCCESS-M";
+        public const string SAVE_IMAGE_ERROR = "ATMDIS-IMAGE_ERROR-M";
+
+        public const string GET_IMAGE_SUCCESS = "ATMDIS-IMAGE_SUCCESS-M";
+        public const string GET_IMAGE_ERROR = "ATMDIS-IMAGE_ERROR-M";
+
+        public const string DELETE_IMAGE_SUCCESS = "ATMDIS-DELETE_IMAGE_SUCCESS-M";
+        public const string DELETE_IMAGE_ERROR = "ATMDIS-DELETE_IMAGE_ERROR-M";
+        #endregion
+
+        #region EntityCode
+        public const string SAVE_ENTITY_CODE_SUCCESS = "ATMDIS-ENTITY_CODE_SUCCESS-M";
+        public const string SAVE_ENTITY_CODE_ERROR = "ATMDIS-ENTITY_CODE_ERROR-M";
+        public const string GET_ENTITY_CODE_CONFIG_SUCCESS = "ATMDIS-GET_ENTITY_CODE_CONFIG_SUCCESS-M"; 
+        public const string GET_ENTITY_CODE_CONFIG_ERROR = "ATMDIS-GET_ENTITY_CODE_CONFIG_ERROR-M";
+        public const string UPDATE_ENTITY_CODE_CONFIG_SUCCESS = "ATMDIS-UPDATE_ENTITY_CODE_CONFIG_SUCCESS-M";
+        public const string UPDATE_ENTITY_CODE_CONFIG_ERROR = "ATMDIS-UPDATE_ENTITY_CODE_CONFIG_ERROR-M";
+        #endregion
     }
 }

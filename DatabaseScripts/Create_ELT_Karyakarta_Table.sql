@@ -38,6 +38,10 @@ BEGIN
         -- ---- Karyakarta business columns --------------------------------
         [KaryakartaCode]     NVARCHAR(50)    NOT NULL,
         [Name]               NVARCHAR(200)   NULL,
+        [FirstName]          NVARCHAR(100)   NULL,
+        [LastName]           NVARCHAR(100)   NULL,
+        [FatherName]         NVARCHAR(200)   NULL,
+        [Email]              NVARCHAR(200)   NULL,
         [Initials]           NVARCHAR(20)    NULL,
         [Role]               NVARCHAR(100)   NULL,
         [ConstituencyId]     INT             NULL,

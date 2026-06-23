@@ -16,16 +16,16 @@ namespace CoreAppwithSSO.ElectionTracker.Services.Implementation
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<List<ProfileOptionValueResponse>> GetProfileOptionValues(ProfileOptionRequest profileOption)
-        {
-            var resp = await _isc.PostAsync<ProfileOptionRequest, ATMResponse<List<ProfileOptionValueResponse>>>(
-                "api/common/GetProfileOptionValues", profileOption, "CommonAPIBase");
+        //public async Task<List<ProfileOptionValueResponse>> GetProfileOptionValues(ProfileOptionRequest profileOption)
+        //{
+        //    var resp = await _isc.PostAsync<ProfileOptionRequest, ATMResponse<List<ProfileOptionValueResponse>>>(
+        //        "api/common/GetProfileOptionValues", profileOption, "CommonAPIBase");
 
-            if (resp != null || !resp.IsError && resp.Data != null)
-            {
-                return resp.Data.FirstOrDefault() ?? [];
-            }
-            return [];
-        }
+        //    if (resp != null || !resp.IsError && resp.Data != null)
+        //    {
+        //        return resp.Data.FirstOrDefault() ?? [];
+        //    }
+        //    return [];
+        //}
     }
 }
